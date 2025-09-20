@@ -1,0 +1,21 @@
+{
+  "name": "MONKY Mobile",
+  "short_name": "MONKY",
+  "start_url": "/m",
+  "display": "standalone",
+  "background_color": "#0a0b0f",
+  "theme_color": "#0a0b0f",
+  "description": "Mobile companion for the MONKY system",
+  "icons": [
+    {
+      "src": "static/icons/monky-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "static/icons/monky-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

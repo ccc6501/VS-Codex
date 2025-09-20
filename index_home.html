@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home MONKY</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #04050b;
+      --panel: #0c0f19;
+      --outline: #1a1d2b;
+      --accent: #7c9bff;
+      --accent-soft: rgba(124, 155, 255, 0.2);
+      --accent-alt: #58f7ff;
+      --text: #f5f7ff;
+      --muted: #a3acc4;
+      --danger: #ff6b81;
+      --warn: #ffb347;
+      --ok: #8dffcd;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+      background: radial-gradient(circle at 12% 20%, rgba(124, 155, 255, 0.12), transparent 45%),
+        radial-gradient(circle at 80% 12%, rgba(88, 247, 255, 0.18), transparent 55%),
+        var(--bg);
+      color: var(--text);
+    }
+    .sidebar {
+      border-right: 1px solid var(--outline);
+      background: linear-gradient(200deg, rgba(12, 14, 26, 0.92) 0%, rgba(6, 7, 14, 0.96) 70%, rgba(5, 6, 12, 0.98) 100%);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .logo {
+      text-transform: uppercase;
+      letter-spacing: 0.3rem;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo span {
+      background: var(--accent-soft);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(124, 155, 255, 0.35);
+    }
+    nav { display: flex; flex-direction: column; gap: 12px; }
+    nav button {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 12px 14px;
+      border-radius: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+    nav button.active, nav button:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(124, 155, 255, 0.14);
+      box-shadow: 0 14px 40px rgba(124, 155, 255, 0.25);
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--outline);
+      padding-top: 18px;
+    }
+    .main { display: flex; flex-direction: column; min-height: 100vh; }
+    header.top-bar {
+      padding: 26px 36px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--outline);
+      background: rgba(7, 9, 16, 0.88);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header.top-bar h2 { margin: 0; font-size: 1.9rem; letter-spacing: 0.08rem; }
+    header.top-bar small { color: var(--muted); }
+    header.top-bar .status { display: flex; gap: 16px; }
+    header.top-bar .status span {
+      border: 1px solid rgba(32, 37, 56, 0.9);
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(13, 16, 26, 0.9);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    main.content {
+      padding: 28px 36px 48px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-auto-rows: minmax(260px, auto);
+      gap: 24px;
+      flex: 1;
+    }
+    section.panel {
+      background: linear-gradient(180deg, rgba(14, 16, 28, 0.94) 0%, rgba(9, 11, 18, 0.97) 100%);
+      border: 1px solid rgba(28, 32, 50, 0.9);
+      border-radius: 22px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.48);
+    }
+    section.panel.hidden { display: none; }
+    section.panel h3 { margin: 0; text-transform: uppercase; letter-spacing: 0.08rem; font-size: 1rem; }
+    section.panel .subtle { color: var(--muted); font-size: 0.85rem; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+    .metric {
+      border: 1px solid rgba(28, 32, 50, 0.9);
+      background: rgba(16, 18, 30, 0.92);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .metric span.value { font-size: 1.6rem; font-weight: 700; }
+    .metric span.label { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.08rem; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(124, 155, 255, 0.35); color: var(--accent); }
+    .list { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 260px; padding-right: 6px; }
+    .list::-webkit-scrollbar { width: 6px; }
+    .list::-webkit-scrollbar-thumb { background: rgba(124, 155, 255, 0.35); border-radius: 10px; }
+    .item-card {
+      border: 1px solid rgba(36, 41, 62, 0.9);
+      border-radius: 16px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      background: rgba(14, 17, 26, 0.9);
+    }
+    .item-card h4 { margin: 0; font-size: 1rem; }
+    .item-card p { margin: 6px 0 0; color: var(--muted); font-size: 0.9rem; }
+    .alert-banner {
+      border: 1px solid rgba(255, 147, 71, 0.6);
+      background: rgba(61, 38, 14, 0.68);
+      border-radius: 16px;
+      padding: 14px 18px;
+      color: #ffd1a3;
+    }
+    .sensor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .sensor-card {
+      border: 1px solid rgba(32, 37, 56, 0.9);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(10, 12, 22, 0.92);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .sensor-card:hover { transform: translateY(-4px); border-color: var(--accent-alt); }
+    .sensor-card canvas { width: 100%; height: 60px; }
+    .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; border: 1px solid; display: inline-flex; align-items: center; gap: 6px; }
+    .status-badge.ok { border-color: rgba(141, 255, 205, 0.6); color: var(--ok); }
+    .status-badge.drift { border-color: var(--warn); color: var(--warn); }
+    .status-badge.oor { border-color: var(--danger); color: var(--danger); }
+    input, textarea, select {
+      background: rgba(12, 14, 24, 0.9);
+      border: 1px solid rgba(34, 39, 58, 0.9);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    textarea { resize: vertical; min-height: 100px; }
+    button.primary {
+      background: linear-gradient(135deg, rgba(124, 155, 255, 0.22), rgba(124, 155, 255, 0.4));
+      border: 1px solid rgba(124, 155, 255, 0.65);
+      color: var(--text);
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    button.primary:hover { box-shadow: 0 12px 35px rgba(124, 155, 255, 0.35); }
+    .drawer { position: fixed; inset: 0; background: rgba(4, 6, 12, 0.78); display: none; align-items: center; justify-content: center; z-index: 40; }
+    .drawer.active { display: flex; }
+    .drawer .card { width: min(520px, 92vw); border-radius: 24px; background: rgba(12, 15, 25, 0.96); border: 1px solid rgba(32, 37, 56, 0.9); padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+    .drawer canvas { width: 100%; height: 160px; }
+    .drawer button { align-self: flex-end; background: transparent; border: none; color: var(--muted); font-size: 1.4rem; cursor: pointer; }
+    .assistant-panel { display: flex; flex-direction: column; gap: 16px; height: 100%; }
+    .assistant-log { flex: 1; border: 1px solid rgba(32, 37, 56, 0.9); border-radius: 18px; padding: 18px; background: rgba(9, 11, 18, 0.9); overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+    .assistant-entry { display: grid; grid-template-columns: auto 1fr; gap: 12px; }
+    .assistant-entry .avatar { width: 40px; height: 40px; border-radius: 12px; background: radial-gradient(circle at 40% 40%, rgba(124, 155, 255, 0.6), rgba(10, 12, 22, 0.9)); border: 1px solid rgba(124, 155, 255, 0.4); }
+    .assistant-entry.user .avatar { background: radial-gradient(circle at 40% 40%, rgba(88, 247, 255, 0.6), rgba(10, 12, 22, 0.9)); }
+    .assistant-entry .bubble { background: rgba(13, 16, 26, 0.9); border: 1px solid rgba(32, 37, 56, 0.9); padding: 12px 16px; border-radius: 14px; font-size: 0.95rem; line-height: 1.5; }
+    .assistant-entry.assistant .bubble { border-color: rgba(124, 155, 255, 0.45); box-shadow: 0 18px 40px rgba(124, 155, 255, 0.18); }
+    form.chat-input { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+    .vault-items { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 240px; }
+    @media (max-width: 980px) {
+      body { grid-template-columns: 80px 1fr; }
+      .sidebar { padding: 24px 12px; align-items: center; }
+      .logo { flex-direction: column; font-size: 0.75rem; letter-spacing: 0.2rem; }
+      .logo span { padding: 6px 8px; }
+      nav button { font-size: 0; padding: 12px; justify-content: center; }
+      nav button::after { content: attr(data-label); display: block; font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+      .sidebar-footer { display: none; }
+    }
+    @media (max-width: 720px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      header.top-bar { padding: 18px 20px; }
+      main.content { padding: 20px; grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo"><span>MONKY</span> Home</div>
+    <nav>
+      <button class="active" data-tab="bills" data-label="Bills">Bills</button>
+      <button data-tab="sensors" data-label="Sensors">Sensors</button>
+      <button data-tab="tasks" data-label="Tasks">Tasks & Notes</button>
+      <button data-tab="assistant" data-label="AI">Assistant</button>
+      <button data-tab="vault" data-label="Vault">Vault</button>
+      <button data-tab="dev" data-label="Dev">Dev</button>
+    </nav>
+    <div class="sidebar-footer">Living interface • MONKY</div>
+  </aside>
+  <div class="main">
+    <header class="top-bar">
+      <div>
+        <h2>Home Control</h2>
+        <small id="subclock">--</small>
+      </div>
+      <div class="status">
+        <span id="bill-status">Bills loading…</span>
+        <span id="sensor-status">Sensors…</span>
+      </div>
+    </header>
+    <main class="content">
+      <section class="panel" data-panel="bills">
+        <div>
+          <h3>Household Bills</h3>
+          <p class="subtle">Track due-soon invoices, ledger payments, and neon cash flow.</p>
+        </div>
+        <div class="metric-grid">
+          <div class="metric">
+            <span class="label">Total Bills</span>
+            <span class="value" id="bills-total">0</span>
+            <span class="chip" id="bills-due-chip">Loading…</span>
+          </div>
+          <div class="metric">
+            <span class="label">Due Soon</span>
+            <span class="value" id="bills-due">0</span>
+            <span class="chip">Next 7 days</span>
+          </div>
+          <div class="metric">
+            <span class="label">Ledger Entries</span>
+            <span class="value" id="ledger-count">0</span>
+            <span class="chip">Payments logged</span>
+          </div>
+        </div>
+        <form id="bill-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+          <input name="name" placeholder="Bill name" required />
+          <input name="amount" placeholder="Amount" type="number" step="0.01" />
+          <input name="due_date" type="date" />
+          <select name="frequency">
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+          <input name="category" placeholder="Category" />
+          <button class="primary" type="submit" style="grid-column:1/-1;">Add Bill</button>
+        </form>
+        <div class="list" id="bill-list" style="grid-column: span 2;"></div>
+      </section>
+
+      <section class="panel hidden" data-panel="sensors">
+        <div>
+          <h3>Sensors</h3>
+          <p class="subtle">Pool chemistry, smart-home telemetry, ambient monitors.</p>
+        </div>
+        <div id="home-alert"></div>
+        <div class="sensor-grid" id="home-sensor-grid"></div>
+      </section>
+
+      <section class="panel hidden" data-panel="tasks">
+        <div>
+          <h3>Tasks & Notes</h3>
+          <p class="subtle">Personal tasks, chores, reminders, and neon sticky notes.</p>
+        </div>
+        <form id="home-task-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+          <input name="title" placeholder="Task" required />
+          <input name="due_date" type="date" />
+          <select name="priority">
+            <option value="medium">Priority: Medium</option>
+            <option value="high">Priority: High</option>
+            <option value="low">Priority: Low</option>
+          </select>
+          <textarea name="description" placeholder="Details" style="grid-column:1/-1;"></textarea>
+          <button class="primary" type="submit" style="grid-column:1/-1;">Add Task</button>
+        </form>
+        <div class="list" id="home-task-list" style="grid-column: span 2;"></div>
+        <form id="home-note-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+          <input name="title" placeholder="Note title" />
+          <textarea name="content" placeholder="Note details" style="grid-column:1/-1;"></textarea>
+          <button class="primary" type="submit" style="grid-column:1/-1;">Save Note</button>
+        </form>
+        <div class="list" id="home-note-list" style="grid-column: span 2;"></div>
+      </section>
+
+      <section class="panel hidden" data-panel="assistant">
+        <div>
+          <h3>Assistant</h3>
+          <p class="subtle">Ask MONKY about payments, chores, sensors, and daily status.</p>
+        </div>
+        <div class="assistant-panel">
+          <div class="assistant-log" id="home-assistant-log"></div>
+          <form class="chat-input" id="home-assistant-form">
+            <input id="home-assistant-input" placeholder="Did we pay power bill?" autocomplete="off" />
+            <button class="primary" type="submit">Ask</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel hidden" data-panel="vault">
+        <div>
+          <h3>Vault</h3>
+          <p class="subtle">Encrypted storage for family docs. PIN required.</p>
+        </div>
+        <div id="home-vault-locked" style="display:flex;flex-direction:column;gap:12px;">
+          <input type="password" id="home-vault-pin" placeholder="PIN" />
+          <button class="primary" id="home-vault-unlock">Unlock</button>
+        </div>
+        <div id="home-vault-body" style="display:none;flex-direction:column;gap:16px;">
+          <form id="home-vault-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+            <input name="name" placeholder="Name" required />
+            <input name="category" placeholder="Category" />
+            <textarea name="secret" placeholder="Secret" style="grid-column:1/-1;"></textarea>
+            <button class="primary" type="submit" style="grid-column:1/-1;">Save Secret</button>
+          </form>
+          <div class="vault-items" id="home-vault-items"></div>
+        </div>
+      </section>
+
+      <section class="panel hidden" data-panel="dev">
+        <div>
+          <h3>Dev</h3>
+          <p class="subtle">Diagnostics, backups, toggles.</p>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><span class="label">Sensors</span><span class="value" id="home-dev-sensors">-</span></div>
+          <div class="metric"><span class="label">Open Tasks</span><span class="value" id="home-dev-tasks">-</span></div>
+          <div class="metric"><span class="label">Bills</span><span class="value" id="home-dev-bills">-</span></div>
+        </div>
+        <form id="home-backup-form" style="display:flex;gap:12px;align-items:center;">
+          <button class="primary" type="submit">Backup</button>
+          <span class="subtle" id="home-backup-status"></span>
+        </form>
+        <label style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="toggle-sim" /> Sensor simulation
+        </label>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer" id="home-sensor-drawer">
+    <div class="card">
+      <button id="home-drawer-close">×</button>
+      <h3 id="home-drawer-title"></h3>
+      <div class="subtle" id="home-drawer-subtitle"></div>
+      <canvas id="home-drawer-chart" width="480" height="160"></canvas>
+      <div class="metric-grid">
+        <div class="metric"><span class="label">Current</span><span class="value" id="home-drawer-current"></span></div>
+        <div class="metric"><span class="label">Status</span><span class="value" id="home-drawer-status"></span></div>
+        <div class="metric"><span class="label">Updated</span><span class="value" id="home-drawer-updated"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const panels = document.querySelectorAll('section.panel');
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        panels.forEach(panel => panel.classList.toggle('hidden', panel.dataset.panel !== btn.dataset.tab));
+      });
+    });
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('subclock').textContent = `${now.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })} — ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    async function fetchJSON(url, options = {}) {
+      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+      if (!res.ok) throw new Error(await res.text());
+      if (res.status === 204) return null;
+      return res.json();
+    }
+
+    async function loadBills() {
+      const bills = await fetchJSON('/bills');
+      document.getElementById('bills-total').textContent = bills.length;
+      const now = new Date();
+      const dueSoon = bills.filter(b => b.due_date && (new Date(b.due_date) - now) / (1000*3600*24) <= 7);
+      document.getElementById('bills-due').textContent = dueSoon.length;
+      document.getElementById('bills-due-chip').textContent = dueSoon.slice(0, 3).map(b => `${b.name} → ${b.due_date}`).join(' • ') || 'All clear';
+      document.getElementById('bill-status').textContent = dueSoon.length ? `${dueSoon.length} due soon` : 'All bills clear';
+      const list = document.getElementById('bill-list');
+      list.innerHTML = '';
+      let ledgerCount = 0;
+      for (const bill of bills) {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `<div><h4>${bill.name}</h4><p>$${Number(bill.amount).toFixed(2)} • Due ${bill.due_date || '—'} • ${bill.frequency}</p><p class="subtle">${bill.status}</p></div>`;
+        const ledgerBtn = document.createElement('button');
+        ledgerBtn.className = 'primary';
+        ledgerBtn.textContent = 'Log Payment';
+        ledgerBtn.addEventListener('click', () => openLedgerModal(bill.id, bill.name));
+        card.appendChild(ledgerBtn);
+        list.appendChild(card);
+        const ledgerEntries = await fetchJSON(`/bills/${bill.id}/ledger`);
+        ledgerCount += ledgerEntries.length;
+        if (ledgerEntries.length) {
+          const ledgerList = document.createElement('div');
+          ledgerList.className = 'subtle';
+          ledgerList.innerHTML = ledgerEntries.slice(0, 3).map(e => `• Paid ${e.paid_on || ''} $${e.amount || ''} ${e.notes || ''}`).join('<br/>');
+          card.appendChild(ledgerList);
+        }
+      }
+      document.getElementById('ledger-count').textContent = ledgerCount;
+    }
+
+    async function openLedgerModal(billId, name) {
+      const paidOn = prompt(`Payment date for ${name}? (YYYY-MM-DD)`);
+      if (!paidOn) return;
+      const amount = prompt('Amount paid?');
+      await fetchJSON(`/bills/${billId}/ledger`, { method: 'POST', body: JSON.stringify({ paid_on: paidOn, amount: Number(amount || 0) }) });
+      loadBills();
+    }
+
+    document.getElementById('bill-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      payload.amount = Number(payload.amount || 0);
+      await fetchJSON('/bills', { method: 'POST', body: JSON.stringify(payload) });
+      e.target.reset();
+      loadBills();
+    });
+
+    async function loadSensors() {
+      const sensors = await fetchJSON('/sensors');
+      const alerts = sensors.filter(s => s.status && s.status !== 'OK');
+      document.getElementById('sensor-status').textContent = alerts.length ? `${alerts.length} alert(s)` : 'Sensors nominal';
+      const grid = document.getElementById('home-sensor-grid');
+      grid.innerHTML = '';
+      const alertBanner = document.getElementById('home-alert');
+      if (alerts.length) {
+        alertBanner.innerHTML = `<div class="alert-banner">${alerts.map(a => `${a.name} ${a.status}`).join(' • ')}</div>`;
+      } else {
+        alertBanner.innerHTML = '';
+      }
+      sensors.forEach(sensor => {
+        const card = document.createElement('div');
+        card.className = 'sensor-card';
+        const badgeClass = sensor.status === 'OK' ? 'ok' : sensor.status === 'Drift' ? 'drift' : 'oor';
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong>${sensor.name}</strong>
+            <span class="status-badge ${badgeClass.toLowerCase()}">${sensor.status}</span>
+          </div>
+          <div class="subtle">${sensor.location || sensor.kind || ''}</div>
+          <canvas class="spark" data-id="${sensor.id}"></canvas>
+          <div class="subtle">${Number(sensor.last_value || 0).toFixed(2)} ${sensor.unit || ''} • Updated ${sensor.last_updated ? new Date(sensor.last_updated).toLocaleTimeString() : ''}</div>`;
+        card.addEventListener('click', () => openSensorDrawer(sensor));
+        grid.appendChild(card);
+        drawSparkline(card.querySelector('canvas'), sensor.id);
+      });
+    }
+
+    async function drawSparkline(canvas, id) {
+      const readings = await fetchJSON(`/sensors/${id}/readings`);
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      const height = canvas.height = canvas.clientHeight * window.devicePixelRatio;
+      ctx.clearRect(0, 0, width, height);
+      if (!readings.length) return;
+      const values = readings.map(r => r.value).reverse();
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      ctx.beginPath();
+      values.forEach((val, idx) => {
+        const x = (idx / (values.length - 1 || 1)) * (width - 10) + 5;
+        const y = height - ((val - min) / ((max - min) || 1)) * (height - 10) - 5;
+        idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#58f7ff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    async function openSensorDrawer(sensor) {
+      const drawer = document.getElementById('home-sensor-drawer');
+      drawer.classList.add('active');
+      document.getElementById('home-drawer-title').textContent = sensor.name;
+      document.getElementById('home-drawer-subtitle').textContent = `${sensor.location || ''} • ${sensor.description || ''}`;
+      document.getElementById('home-drawer-current').textContent = `${Number(sensor.last_value || 0).toFixed(2)} ${sensor.unit || ''}`;
+      document.getElementById('home-drawer-status').textContent = sensor.status;
+      document.getElementById('home-drawer-updated').textContent = sensor.last_updated ? new Date(sensor.last_updated).toLocaleString() : '';
+      const readings = await fetchJSON(`/sensors/${sensor.id}/readings`);
+      const canvas = document.getElementById('home-drawer-chart');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!readings.length) return;
+      const values = readings.map(r => r.value).reverse();
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      ctx.beginPath();
+      values.forEach((val, idx) => {
+        const x = (idx / (values.length - 1 || 1)) * (canvas.width - 40) + 20;
+        const y = canvas.height - ((val - min) / ((max - min) || 1)) * (canvas.height - 40) - 20;
+        idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#58f7ff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.lineTo(canvas.width - 20, canvas.height - 20);
+      ctx.lineTo(20, canvas.height - 20);
+      ctx.closePath();
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, 'rgba(88,247,255,0.25)');
+      gradient.addColorStop(1, 'rgba(88,247,255,0)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
+
+    document.getElementById('home-drawer-close').addEventListener('click', () => {
+      document.getElementById('home-sensor-drawer').classList.remove('active');
+    });
+
+    document.getElementById('home-task-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      payload.scope = 'Home';
+      await fetchJSON('/tasks', { method: 'POST', body: JSON.stringify(payload) });
+      e.target.reset();
+      loadHomeTasks();
+    });
+
+    async function loadHomeTasks() {
+      const tasks = await fetchJSON('/tasks');
+      const list = document.getElementById('home-task-list');
+      list.innerHTML = '';
+      tasks.filter(t => (t.scope || '').toLowerCase() !== 'work').forEach(task => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `<div><h4>${task.title}</h4><p>${task.description || ''}</p><p class="subtle">${task.status} • Due ${task.due_date || '—'}</p></div>`;
+        list.appendChild(card);
+      });
+    }
+
+    document.getElementById('home-note-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      await fetchJSON('/notes', { method: 'POST', body: JSON.stringify(payload) });
+      e.target.reset();
+      loadHomeNotes();
+    });
+
+    async function loadHomeNotes() {
+      const notes = await fetchJSON('/notes');
+      const list = document.getElementById('home-note-list');
+      list.innerHTML = '';
+      notes.forEach(note => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `<div><h4>${note.title || 'Untitled'}</h4><p>${note.content}</p><p class="subtle">${new Date(note.created_at).toLocaleString()}</p></div>`;
+        list.appendChild(card);
+      });
+    }
+
+    async function loadHomeAssistant() {
+      const messages = await fetchJSON('/assistant/messages');
+      const log = document.getElementById('home-assistant-log');
+      log.innerHTML = '';
+      messages.forEach(msg => appendAssistant(msg.role, msg.content));
+    }
+
+    function appendAssistant(role, content) {
+      const entry = document.createElement('div');
+      entry.className = `assistant-entry ${role}`;
+      entry.innerHTML = `<div class="avatar"></div><div><div class="bubble">${content.replace(/\n/g, '<br/>')}</div></div>`;
+      document.getElementById('home-assistant-log').appendChild(entry);
+      document.getElementById('home-assistant-log').scrollTo({ top: document.getElementById('home-assistant-log').scrollHeight, behavior: 'smooth' });
+    }
+
+    document.getElementById('home-assistant-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('home-assistant-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      appendAssistant('user', msg);
+      input.value = '';
+      try {
+        const res = await fetchJSON('/assistant/send', { method: 'POST', body: JSON.stringify({ message: msg }) });
+        appendAssistant('assistant', res.reply);
+      } catch (err) {
+        appendAssistant('assistant', 'Unable to reach MONKY.');
+      }
+    });
+
+    async function unlockVault() {
+      const pin = document.getElementById('home-vault-pin').value.trim();
+      if (!pin) return;
+      const res = await fetchJSON('/vault/items/list', { method: 'POST', body: JSON.stringify({ pin }) });
+      document.getElementById('home-vault-locked').style.display = 'none';
+      const body = document.getElementById('home-vault-body');
+      body.style.display = 'flex';
+      body.dataset.pin = pin;
+      renderVaultItems(res);
+    }
+
+    function renderVaultItems(items) {
+      const list = document.getElementById('home-vault-items');
+      list.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `<div><h4>${item.name}</h4><p>${item.secret}</p><p class="subtle">${item.category || ''}</p></div>`;
+        const del = document.createElement('button');
+        del.className = 'primary';
+        del.textContent = 'Delete';
+        del.style.background = 'rgba(255,107,129,0.1)';
+        del.style.borderColor = 'rgba(255,107,129,0.6)';
+        del.addEventListener('click', async () => {
+          const pin = document.getElementById('home-vault-body').dataset.pin;
+          await fetchJSON(`/vault/items/${item.id}`, { method: 'DELETE', body: JSON.stringify({ pin }) });
+          unlockVault();
+        });
+        card.appendChild(del);
+        list.appendChild(card);
+      });
+    }
+
+    async function loadDev() {
+      const status = await fetchJSON('/dev/status');
+      document.getElementById('home-dev-sensors').textContent = status.sensor_count;
+      document.getElementById('home-dev-tasks').textContent = status.open_tasks;
+      document.getElementById('home-dev-bills').textContent = status.bill_count;
+      document.getElementById('home-backup-status').textContent = status.latest_backup ? `Latest: ${status.latest_backup}` : 'No backup yet';
+      document.getElementById('toggle-sim').checked = status.scheduler_running;
+    }
+
+    document.getElementById('home-backup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const res = await fetchJSON('/dev/backup', { method: 'POST' });
+      document.getElementById('home-backup-status').textContent = `Created ${res.backup}`;
+    });
+
+    document.getElementById('toggle-sim').addEventListener('change', async (e) => {
+      await fetchJSON('/dev/toggles', { method: 'POST', body: JSON.stringify({ sensor_simulation: e.target.checked }) });
+      loadSensors();
+    });
+
+    document.getElementById('home-vault-unlock').addEventListener('click', unlockVault);
+    document.getElementById('home-vault-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(e.target).entries());
+      payload.pin = document.getElementById('home-vault-body').dataset.pin;
+      await fetchJSON('/vault/items', { method: 'POST', body: JSON.stringify(payload) });
+      e.target.reset();
+      unlockVault();
+    });
+
+    async function boot() {
+      try {
+        await Promise.all([loadBills(), loadSensors(), loadHomeTasks(), loadHomeNotes(), loadHomeAssistant(), loadDev()]);
+      } catch (err) {
+        console.warn('Home boot', err);
+      }
+    }
+    boot();
+    setInterval(loadSensors, 45000);
+  </script>
+</body>
+</html>
