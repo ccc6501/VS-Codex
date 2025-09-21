@@ -1,0 +1,14 @@
+# Virtual environments
+.venv/
+
+# SQLite databases
+monky.db
+monky.db-*
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local storage
+storage/
+monky/
