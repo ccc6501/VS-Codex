@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MONKY Mobile</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#05060a" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #03040a;
+      --panel: rgba(13, 15, 26, 0.92);
+      --outline: rgba(32, 35, 52, 0.85);
+      --accent: #58f7ff;
+      --accent-soft: rgba(88, 247, 255, 0.18);
+      --text: #f5f8ff;
+      --muted: #95a2c4;
+      --danger: #ff6b81;
+      --warn: #ffb347;
+      --ok: #7cffb2;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      background: radial-gradient(circle at 20% 0%, rgba(88, 247, 255, 0.18), transparent 55%),
+        radial-gradient(circle at 85% 20%, rgba(126, 111, 255, 0.18), transparent 65%),
+        var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 28px 24px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      letter-spacing: 0.16rem;
+    }
+    header .badge {
+      font-size: 0.75rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(88, 247, 255, 0.5);
+      background: rgba(88, 247, 255, 0.12);
+    }
+    main {
+      flex: 1;
+      padding: 0 20px 100px;
+      display: grid;
+      gap: 18px;
+    }
+    section.card {
+      background: var(--panel);
+      border: 1px solid var(--outline);
+      border-radius: 22px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(12px);
+    }
+    section.card h2 {
+      margin: 0;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08rem;
+    }
+    section.card .subtle { color: var(--muted); font-size: 0.85rem; }
+    .chat-log {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .chat-log::-webkit-scrollbar { width: 6px; }
+    .chat-log::-webkit-scrollbar-thumb { background: rgba(88, 247, 255, 0.35); border-radius: 10px; }
+    .bubble {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(44, 49, 68, 0.9);
+      background: rgba(10, 12, 22, 0.92);
+      font-size: 0.95rem;
+      line-height: 1.45;
+      width: fit-content;
+      max-width: 80%;
+    }
+    .bubble.user {
+      align-self: flex-end;
+      background: rgba(126, 111, 255, 0.16);
+      border-color: rgba(126, 111, 255, 0.6);
+    }
+    form.chat-input {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    input, textarea {
+      background: rgba(12, 14, 24, 0.92);
+      border: 1px solid rgba(38, 43, 66, 0.9);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    button.primary {
+      background: linear-gradient(135deg, rgba(88, 247, 255, 0.18), rgba(88, 247, 255, 0.4));
+      border: 1px solid rgba(88, 247, 255, 0.6);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .tile {
+      border: 1px solid rgba(32, 35, 52, 0.9);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(9, 11, 19, 0.94);
+    }
+    .tile strong { font-size: 0.95rem; }
+    .tile small { color: var(--muted); font-size: 0.75rem; }
+    canvas.spark {
+      width: 100%;
+      height: 50px;
+    }
+    .nav-bar {
+      position: fixed;
+      bottom: env(safe-area-inset-bottom, 0);
+      left: 0;
+      right: 0;
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0));
+      background: rgba(8, 10, 18, 0.92);
+      border-top: 1px solid rgba(32, 35, 52, 0.9);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .nav-bar button {
+      background: rgba(12, 14, 24, 0.9);
+      border: 1px solid rgba(32, 35, 52, 0.9);
+      border-radius: 14px;
+      padding: 8px 10px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-bar button.active { border-color: var(--accent); color: var(--text); box-shadow: 0 12px 30px rgba(88, 247, 255, 0.2); }
+    .hidden { display: none !important; }
+    .status-badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 999px; border: 1px solid; align-self: flex-start; }
+    .status-badge.ok { border-color: rgba(124, 255, 178, 0.6); color: var(--ok); }
+    .status-badge.drift { border-color: var(--warn); color: var(--warn); }
+    .status-badge.oor { border-color: var(--danger); color: var(--danger); }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>MONKY</h1>
+      <div class="badge" id="mobile-clock">--</div>
+    </div>
+    <div class="badge" id="mobile-status">Local</div>
+  </header>
+  <main>
+    <section class="card" data-card="chat">
+      <h2>Assistant</h2>
+      <p class="subtle">Ask MONKY on the go. Answers cite local data.</p>
+      <div class="chat-log" id="mobile-chat-log"></div>
+      <form class="chat-input" id="mobile-chat-form">
+        <input id="mobile-chat-input" placeholder="Pool chemistry ok?" autocomplete="off" />
+        <button class="primary" type="submit">Send</button>
+      </form>
+    </section>
+
+    <section class="card hidden" data-card="bills">
+      <h2>Quick Bills</h2>
+      <p class="subtle">Due-soon glance.</p>
+      <div class="tile-grid" id="mobile-bills"></div>
+    </section>
+
+    <section class="card hidden" data-card="sensors">
+      <h2>Quick Sensors</h2>
+      <p class="subtle">Live readings with neon sparklines.</p>
+      <div class="tile-grid" id="mobile-sensors"></div>
+    </section>
+
+    <section class="card hidden" data-card="tasks">
+      <h2>Quick Tasks</h2>
+      <p class="subtle">Capture chores and reminders.</p>
+      <div class="tile-grid" id="mobile-tasks"></div>
+      <form id="mobile-task-form" style="display:grid;grid-template-columns:1fr auto;gap:12px;">
+        <input name="title" placeholder="Task" required />
+        <button class="primary" type="submit">Add</button>
+      </form>
+    </section>
+  </main>
+
+  <nav class="nav-bar">
+    <button class="active" data-target="chat">Chat</button>
+    <button data-target="bills">Bills</button>
+    <button data-target="sensors">Sensors</button>
+    <button data-target="tasks">Tasks</button>
+  </nav>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
+      });
+    }
+
+    function updateClock() {
+      document.getElementById('mobile-clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    async function fetchJSON(url, options = {}) {
+      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+      if (!res.ok) throw new Error(await res.text());
+      if (res.status === 204) return null;
+      return res.json();
+    }
+
+    async function loadChat() {
+      const messages = await fetchJSON('/assistant/messages');
+      const log = document.getElementById('mobile-chat-log');
+      log.innerHTML = '';
+      messages.slice(-10).forEach(msg => appendBubble(msg.role, msg.content));
+      log.scrollTo({ top: log.scrollHeight, behavior: 'smooth' });
+    }
+
+    function appendBubble(role, text) {
+      const bubble = document.createElement('div');
+      bubble.className = `bubble ${role === 'user' ? 'user' : ''}`;
+      bubble.innerHTML = text.replace(/\n/g, '<br/>');
+      document.getElementById('mobile-chat-log').appendChild(bubble);
+    }
+
+    document.getElementById('mobile-chat-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('mobile-chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      appendBubble('user', msg);
+      input.value = '';
+      try {
+        const res = await fetchJSON('/assistant/send', { method: 'POST', body: JSON.stringify({ message: msg }) });
+        appendBubble('assistant', res.reply);
+        document.getElementById('mobile-status').textContent = 'Synced';
+      } catch (err) {
+        appendBubble('assistant', 'Assistant offline');
+        document.getElementById('mobile-status').textContent = 'Offline';
+      }
+    });
+
+    async function loadBills() {
+      const bills = await fetchJSON('/bills');
+      const list = document.getElementById('mobile-bills');
+      list.innerHTML = '';
+      bills.slice(0, 6).forEach(bill => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.innerHTML = `<strong>${bill.name}</strong><small>$${Number(bill.amount).toFixed(2)}</small><small>Due ${bill.due_date || '—'}</small>`;
+        list.appendChild(tile);
+      });
+    }
+
+    async function loadSensors() {
+      const sensors = await fetchJSON('/sensors');
+      const list = document.getElementById('mobile-sensors');
+      list.innerHTML = '';
+      sensors.slice(0, 6).forEach(sensor => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        const badgeClass = sensor.status === 'OK' ? 'ok' : sensor.status === 'Drift' ? 'drift' : 'oor';
+        tile.innerHTML = `<strong>${sensor.name}</strong><span class="status-badge ${badgeClass.toLowerCase()}">${sensor.status}</span><canvas class="spark" data-id="${sensor.id}"></canvas><small>${Number(sensor.last_value || 0).toFixed(2)} ${sensor.unit || ''}</small>`;
+        list.appendChild(tile);
+        drawSparkline(tile.querySelector('canvas'), sensor.id);
+      });
+    }
+
+    async function drawSparkline(canvas, id) {
+      const readings = await fetchJSON(`/sensors/${id}/readings`);
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      const height = canvas.height = canvas.clientHeight * window.devicePixelRatio;
+      ctx.clearRect(0, 0, width, height);
+      if (!readings.length) return;
+      const values = readings.map(r => r.value).reverse();
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      ctx.beginPath();
+      values.forEach((val, idx) => {
+        const x = (idx / (values.length - 1 || 1)) * (width - 10) + 5;
+        const y = height - ((val - min) / ((max - min) || 1)) * (height - 10) - 5;
+        idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#58f7ff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    async function loadTasks() {
+      const tasks = await fetchJSON('/tasks');
+      const list = document.getElementById('mobile-tasks');
+      list.innerHTML = '';
+      tasks.filter(t => t.status !== 'done').slice(0, 6).forEach(task => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.innerHTML = `<strong>${task.title}</strong><small>${task.due_date || 'Anytime'} • ${task.priority || 'medium'}</small>`;
+        list.appendChild(tile);
+      });
+    }
+
+    document.getElementById('mobile-task-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(e.target).entries());
+      payload.scope = 'Mobile';
+      await fetchJSON('/tasks', { method: 'POST', body: JSON.stringify(payload) });
+      e.target.reset();
+      loadTasks();
+    });
+
+    document.querySelectorAll('.nav-bar button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.dataset.target;
+        document.querySelectorAll('section.card').forEach(card => card.classList.toggle('hidden', card.dataset.card !== target));
+      });
+    });
+
+    async function boot() {
+      try {
+        await Promise.all([loadChat(), loadBills(), loadSensors(), loadTasks()]);
+        document.getElementById('mobile-status').textContent = 'Synced';
+      } catch (err) {
+        document.getElementById('mobile-status').textContent = 'Offline';
+      }
+    }
+    boot();
+    setInterval(loadSensors, 60000);
+  </script>
+</body>
+</html>
