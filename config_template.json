@@ -1,0 +1,35 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5050
+  },
+  "features": {
+    "work": true,
+    "home": true,
+    "mobile": true,
+    "sensor_simulation": true,
+    "assistant_embeddings": false
+  },
+  "paths": {
+    "desktop_export": "",
+    "icons_dir": "",
+    "avatar_path": "",
+    "rag_docs_dir": "",
+    "db_path": "monky.db"
+  },
+  "integrations": {
+    "openrouter_key": "",
+    "genesis_key": "",
+    "default_model": "monky-local"
+  },
+  "security": {
+    "vault_passphrase": "",
+    "vault_pin": "1234"
+  },
+  "network": {
+    "sync_relay_url": ""
+  },
+  "apps": {
+    "default": "work"
+  }
+}

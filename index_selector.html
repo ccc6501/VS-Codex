@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Launch MONKY</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 20% 20%, rgba(88, 247, 255, 0.12), transparent 45%),
+        radial-gradient(circle at 80% 10%, rgba(126, 111, 255, 0.18), transparent 50%),
+        #05060a;
+      color: #f5f8ff;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+    .card {
+      padding: 40px;
+      border-radius: 28px;
+      border: 1px solid rgba(40, 45, 68, 0.9);
+      background: rgba(10, 12, 20, 0.92);
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+      display: grid;
+      gap: 24px;
+      text-align: center;
+      min-width: min(520px, 92vw);
+    }
+    h1 { margin: 0; letter-spacing: 0.32rem; font-size: 1.6rem; }
+    .options { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+    a {
+      text-decoration: none;
+      color: inherit;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(88, 247, 255, 0.35);
+      background: rgba(88, 247, 255, 0.08);
+      transition: 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.08rem;
+    }
+    a:hover { box-shadow: 0 18px 40px rgba(88, 247, 255, 0.25); transform: translateY(-2px); }
+    .subtle { color: #9aa4c0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Launch M.O.N.K.Y</h1>
+    <div class="subtle">Select a cockpit to enter</div>
+    <div class="options">
+      <a href="/work">Work</a>
+      <a href="/home">Home</a>
+      <a href="/m">Mobile</a>
+    </div>
+  </div>
+</body>
+</html>
