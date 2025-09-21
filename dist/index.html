@@ -1,0 +1,73 @@
+
+<!doctype html><html><head>
+  <meta charset="utf-8"/>
+  <title>AIVA Multi-Provider Hub</title>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <style>canvas{stroke:#4B9FFF;}</style>
+</head><body>
+  <div class="sidebar">
+    <h2>Control Panel</h2>
+
+    <details open class="panel">
+      <summary>Chat Settings</summary>
+      <div class="row" style="margin-top:8px;">
+        <label>Provider&nbsp;
+          <select id="provider">
+            <option value="openai">OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="qwen">Qwen / GWEN</option>
+            <option value="ollama">Ollama (local)</option>
+            <option value="genesis">Genesis</option>
+          </select>
+        </label>
+        <label>Model&nbsp;
+          <select id="model"><option>Loading…</option></select>
+        </label>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <button class="secondary" onclick="refreshModels()">Reload Models</button>
+        <button onclick="ping(document.getElementById('provider').value)">Ping Provider</button>
+        <button onclick="pingAll()">Test All</button>
+      </div>
+    </details>
+
+    <details class="panel">
+      <summary>Storage & Network</summary>
+      <div class="row" style="flex-direction:column; align-items:flex-start;">
+        <label>Local storage path</label>
+        <input id="local_path" style="width:100%" placeholder="Set shared storage path"/>
+        <div class="row">
+          <button onclick="testStorage()">Test Local Storage</button>
+        </div>
+        <hr style="width:100%; border:0; border-top:1px solid #2a2a2f; margin:8px 0;">
+        <label>Tailscale router/base URL</label>
+        <input id="tailscale" style="width:100%" placeholder="http://100.x.y.z:8000"/>
+        <label>Cloud service (future-proof)</label>
+        <input id="cloud_provider" placeholder="firebase | nextcloud | webdav"/>
+        <input id="cloud_base" placeholder="https://… (optional)"/>
+        <div class="row">
+          <button onclick="saveConfig()">Save Config</button>
+          <a href="/export/config" target="_blank"><button class="secondary">Export Connection JSON</button></a>
+        </div>
+      </div>
+    </details>
+
+    <details class="panel">
+      <summary>Status</summary>
+      <div class="row">Uptime: <span id="uptime">—</span></div>
+      <div style="margin-top:8px;">Ping Sparkline</div>
+      <canvas id="pingline" width="600" height="60"></canvas>
+    </details>
+  </div>
+
+  <div class="chat">
+    <h1>Multi-Provider Chat</h1>
+    <div id="messages" class="messages"></div>
+    <div class="row">
+      <input id="prompt" class="prompt" type="text" placeholder="Type and press Enter…">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body></html>
