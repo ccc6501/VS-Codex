@@ -1,8 +1,14 @@
 flask
-requests
 cryptography
 apscheduler
 sqlite-utils
 sentence-transformers
 numpy
 paho-mqtt
+requests
+python-dotenv
+fastapi
+uvicorn
+httpx
+pystray
+Pillow

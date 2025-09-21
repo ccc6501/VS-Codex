@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+monky.db
+monky.db-*
+storage/
+monky/
+dist/

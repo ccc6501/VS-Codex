@@ -1,0 +1,60 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5080
+  },
+  "features": {
+    "work": false,
+    "home": true,
+    "mobile": true,
+    "sensor_simulation": true,
+    "assistant_embeddings": true
+  },
+  "paths": {
+    "desktop_export": "C:\\Users\\Chance\\Desktop\\Home",
+    "icons_dir": "C:\\Users\\Chance\\Desktop\\Home\\icons",
+    "avatar_path": "C:\\Users\\Chance\\Desktop\\Home\\avatar",
+    "rag_docs_dir": "C:\\Users\\Chance\\Desktop\\Home\\rag",
+    "db_path": "C:\\Users\\Chance\\Desktop\\Home\\sql"
+  },
+  "integrations": {
+    "openrouter_key": "",
+    "genesis_key": "",
+    "default_model": "gpt-oss-120b",
+    "openai_key": "",
+    "openai_model": "gpt-4o-mini",
+    "openai_base": "https://api.openai.com/v1",
+    "qwen_key": "",
+    "qwen_model": "qwen-turbo",
+    "qwen_base": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    "ollama_host": "http://localhost:11434",
+    "ollama_home_model": "llama3",
+    "genesis_base": "https://api.ai.us.lmco.com/v1"
+  },
+  "security": {
+    "vault_passphrase": "6501",
+    "vault_pin": "6501"
+  },
+  "network": {
+    "sync_relay_url": "",
+    "host_ip": "",
+    "router_ip": ""
+  },
+  "apps": {
+    "default": "home"
+  },
+  "storage": {
+    "work": {
+      "provider": "local",
+      "root": "storage/work"
+    },
+    "shared": {
+      "provider": "filesystem",
+      "sync_provider": "google_drive",
+      "mount_path": "storage/shared"
+    }
+  },
+  "connectivity": {
+    "poll_seconds": 20
+  }
+}

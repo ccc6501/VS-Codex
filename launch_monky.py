@@ -1,86 +1,111 @@
-import json
+import argparse
+import atexit
 import os
-import subprocess
+import signal
 import sys
 import time
-import webbrowser
 from pathlib import Path
 
-import requests
-
-BASE_DIR = Path(__file__).resolve().parent
-CONFIG_PATH = BASE_DIR / "config.json"
-SERVER_PATH = BASE_DIR / "server.py"
-LOG_DIR = BASE_DIR / "logs"
+from server import HubController, HOST, PORT
 
 
-def load_config():
-    if not CONFIG_PATH.exists():
-        raise FileNotFoundError("config.json not found. Run setup_wizard.py first.")
-    with CONFIG_PATH.open("r", encoding="utf-8") as fh:
-        return json.load(fh)
+ROOT = Path(__file__).resolve().parent
+PID_FILE = ROOT / "monky.pid"
 
 
-def enabled_apps(config):
-    features = config.get("features", {})
-    return [app for app in ["work", "home", "mobile"] if features.get(app, True)]
+def _read_pid() -> int | None:
+    try:
+        data = PID_FILE.read_text().strip()
+        if not data:
+            return None
+        return int(data)
+    except FileNotFoundError:
+        return None
+    except ValueError:
+        return None
 
 
-def start_server(config):
-    python = sys.executable
-    if os.name == "nt":
-        pythonw = Path(python).with_name("pythonw.exe")
-        if pythonw.exists():
-            python = str(pythonw)
-    LOG_DIR.mkdir(exist_ok=True)
-    log_file = (LOG_DIR / "monky-server.log").open("a", encoding="utf-8")
-    env = os.environ.copy()
-    env.setdefault("PYTHONUNBUFFERED", "1")
-    process = subprocess.Popen([python, str(SERVER_PATH)], stdout=log_file, stderr=log_file, cwd=BASE_DIR, env=env)
-    return process
-
-
-def wait_for_health(host: str, port: int, timeout: int = 30):
-    url = f"http://{host}:{port}/health"
-    start = time.time()
-    while time.time() - start < timeout:
-        try:
-            res = requests.get(url, timeout=2)
-            if res.ok:
-                return True
-        except requests.RequestException:
-            time.sleep(1)
-        else:
-            time.sleep(1)
-    return False
-
-
-def open_default(config):
-    host = config.get("server", {}).get("host", "127.0.0.1")
-    port = int(config.get("server", {}).get("port", 5050))
-    apps = enabled_apps(config)
-    default_app = config.get("apps", {}).get("default", "work")
-    if default_app not in apps and apps:
-        default_app = apps[0]
-    if len(apps) > 1:
-        path = "/"
+def _process_alive(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
     else:
-        path = {"work": "/work", "home": "/home", "mobile": "/m"}.get(default_app, "/")
-    webbrowser.open(f"http://{host}:{port}{path}")
+        return True
+
+
+def _write_pid() -> None:
+    PID_FILE.write_text(str(os.getpid()))
+
+
+def _remove_pid_file() -> None:
+    try:
+        PID_FILE.unlink()
+    except FileNotFoundError:
+        pass
+
+
+def _wait_for_exit(pid: int, timeout: float = 5.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if not _process_alive(pid):
+            return True
+        time.sleep(0.2)
+    return not _process_alive(pid)
 
 
 def main():
-    config = load_config()
-    host = config.get("server", {}).get("host", "127.0.0.1")
-    port = int(config.get("server", {}).get("port", 5050))
-    process = start_server(config)
-    if not wait_for_health(host, port):
-        print("MONKY server failed to start within timeout", file=sys.stderr)
+    parser = argparse.ArgumentParser(description="Launch the AIVA provider hub")
+    parser.add_argument("--headless", action="store_true", help="Run without GUI or tray")
+    parser.add_argument("--no-gui", action="store_true", help="Start without showing the control panel")
+    parser.add_argument("--stop", action="store_true", help="Stop a running hub instance")
+    parser.add_argument("--status", action="store_true", help="Check whether the hub is already running")
+    args = parser.parse_args()
+
+    existing_pid = _read_pid()
+
+    if args.stop:
+        if existing_pid and _process_alive(existing_pid):
+            print(f"Stopping running hub (pid={existing_pid})…")
+            os.kill(existing_pid, signal.SIGINT)
+            if not _wait_for_exit(existing_pid):
+                # Fall back to SIGTERM if the process ignored SIGINT
+                os.kill(existing_pid, signal.SIGTERM)
+                if not _wait_for_exit(existing_pid, timeout=5.0):
+                    print("Process did not terminate; manual intervention required.")
+                    return
+            print("Hub stopped.")
+        else:
+            print("No running hub instance found.")
+        _remove_pid_file()
         return
-    open_default(config)
-    print("MONKY server online at http://%s:%s" % (host, port))
-    # keep launcher alive briefly to avoid premature exit logs closing
-    time.sleep(2)
+
+    if args.status:
+        if existing_pid and _process_alive(existing_pid):
+            print(f"Hub running (pid={existing_pid}) at http://{HOST}:{PORT}")
+        else:
+            print("Hub not running.")
+            _remove_pid_file()
+        return
+
+    if existing_pid and _process_alive(existing_pid):
+        print(f"Hub already running (pid={existing_pid}) at http://{HOST}:{PORT}. Use --stop to restart.")
+        return
+
+    controller = HubController(host=HOST, port=PORT)
+
+    def _handle_termination(signum, frame):  # noqa: ANN001
+        controller.shutdown()
+
+    signal.signal(signal.SIGTERM, _handle_termination)
+
+    _write_pid()
+    atexit.register(_remove_pid_file)
+
+    try:
+        controller.run(headless=args.headless, open_gui=not args.no_gui)
+    finally:
+        _remove_pid_file()
 
 
 if __name__ == "__main__":
