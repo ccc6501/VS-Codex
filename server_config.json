@@ -1,0 +1,9 @@
+{
+  "local_storage_path": "/workspaces/VS-Codex/local_storage",
+  "tailscale_router": "",
+  "cloud_sync": {
+    "provider": "",
+    "base_url": "",
+    "auth": {}
+  }
+}

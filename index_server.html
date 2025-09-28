@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server MONKY</title>
+  <link rel="stylesheet" href="/static/css/monky.css" />
+</head>
+<body>
+  <div class="monky-app" style="grid-template-columns: 1fr;">
+    <div class="monky-main" style="width:100%;">
+      <header class="monky-topbar">
+        <div>
+          <h1 class="title">Server MONKY</h1>
+          <div class="meta" id="server-meta"></div>
+        </div>
+        <div class="meta">
+          <span id="server-clock"></span>
+          <span id="server-host"></span>
+        </div>
+      </header>
+      <main class="monky-content server" style="padding-bottom:96px;">
+        <section class="monky-grid cols-3" id="server-panels">
+          <div class="monky-panel" id="server-status">
+            <h2>Status <small>Runtime health</small></h2>
+            <div id="server-status-body"></div>
+            <button class="button" id="server-refresh" style="margin-top:12px;">Refresh</button>
+          </div>
+
+          <div class="monky-panel" id="server-credentials">
+            <h2>Providers</h2>
+            <form id="server-credentials-form" class="form-grid two-col">
+              <label>OpenRouter key
+                <input type="password" name="integrations.openrouter_key" autocomplete="off" />
+              </label>
+              <label>OpenRouter model
+                <input type="text" name="integrations.openrouter_model" />
+              </label>
+              <label>OpenAI key
+                <input type="password" name="integrations.openai_key" autocomplete="off" />
+              </label>
+              <label>OpenAI model
+                <input type="text" name="integrations.openai_model" />
+              </label>
+              <label>Qwen key
+                <input type="password" name="integrations.qwen_key" autocomplete="off" />
+              </label>
+              <label>Qwen model
+                <input type="text" name="integrations.qwen_model" />
+              </label>
+              <label>Genesis key
+                <input type="password" name="integrations.genesis_key" autocomplete="off" />
+              </label>
+              <label>Genesis model
+                <input type="text" name="integrations.genesis_model" />
+              </label>
+              <label>Ollama host
+                <input type="text" name="integrations.ollama_host" />
+              </label>
+              <label>Ollama default model
+                <input type="text" name="integrations.ollama_home_model" />
+              </label>
+            </form>
+            <button class="button" id="server-save-credentials" style="margin-top:12px;">Save Providers</button>
+          </div>
+
+          <div class="monky-panel" id="server-pings">
+            <h2>Provider Ping</h2>
+            <div id="server-ping-list" class="list"></div>
+            <div style="display:flex;gap:12px;margin-top:12px;">
+              <button class="button secondary" id="server-ping-all">Ping All</button>
+              <button class="button secondary" id="server-refresh-providers">Reload Providers</button>
+            </div>
+          </div>
+
+          <div class="monky-panel" id="server-storage">
+            <h2>Storage Paths</h2>
+            <div class="form-grid two-col">
+              <label>Work storage
+                <input type="text" id="storage-work" />
+              </label>
+              <button class="button secondary" data-scope="work">Test Work</button>
+              <label>Home storage
+                <input type="text" id="storage-home" />
+              </label>
+              <button class="button secondary" data-scope="home">Test Home</button>
+              <label>Shared storage
+                <input type="text" id="storage-shared" />
+              </label>
+              <button class="button secondary" data-scope="shared">Test Shared</button>
+            </div>
+            <div id="storage-result" style="margin-top:12px;color:#9ca9cc;"></div>
+          </div>
+
+          <div class="monky-panel" id="server-request">
+            <h2>Assistant Test</h2>
+            <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
+              <select id="server-request-provider"></select>
+              <input type="text" id="server-request-model" placeholder="Model override (optional)" />
+            </div>
+            <textarea id="server-request-body" rows="6" placeholder="Ask provider a question to verify connectivity"></textarea>
+            <div style="display:flex;gap:10px;margin-top:12px;">
+              <button class="button" id="server-request-send">Send Test</button>
+              <button class="button secondary" id="server-request-clear">Clear</button>
+            </div>
+            <pre id="server-request-result" style="margin-top:12px;max-height:200px;overflow:auto;background:rgba(10,13,22,0.9);padding:12px;border-radius:12px;border:1px solid rgba(76,90,132,0.3);"></pre>
+          </div>
+
+          <div class="monky-panel" style="grid-column: span 2;" id="server-config-panel">
+            <h2>Configuration</h2>
+            <textarea id="server-config" rows="16" placeholder="Config JSON"></textarea>
+            <div style="display:flex;gap:12px;margin-top:12px;">
+              <button class="button" id="server-save-config">Save</button>
+              <button class="button secondary" id="server-reload-config">Reload</button>
+            </div>
+          </div>
+
+          <div class="monky-panel" id="server-maintenance">
+            <h2>Maintenance</h2>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <button class="button" id="server-backup">Backup database</button>
+              <form id="server-restore" style="display:flex;gap:8px;">
+                <input type="text" name="name" placeholder="Backup filename" required />
+                <button class="button secondary" type="submit">Restore</button>
+              </form>
+              <button class="button secondary" id="server-open-launcher">Open Launcher</button>
+              <button class="button secondary" id="server-open-work">Open Work MONKY</button>
+              <button class="button secondary" id="server-open-home">Open Home MONKY</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script type="module" src="/static/js/monky-server.js"></script>
+</body>
+</html>

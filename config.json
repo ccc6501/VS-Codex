@@ -1,7 +1,7 @@
 {
   "server": {
     "host": "127.0.0.1",
-    "port": 5050
+    "port": 5051
   },
   "features": {
     "work": true,
@@ -19,9 +19,7 @@
   },
   "integrations": {
     "openrouter_key": "",
-    "openrouter_model": "openrouter/auto",
     "genesis_key": "",
-    "genesis_model": "llama-3.3-70b-instruct",
     "default_model": "monky-local",
     "openai_key": "",
     "openai_model": "gpt-4o-mini",
@@ -31,7 +29,9 @@
     "qwen_base": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
     "ollama_host": "http://localhost:11434",
     "ollama_home_model": "llama3",
-    "genesis_base": "https://api.ai.us.lmco.com/v1"
+    "genesis_base": "https://api.ai.us.lmco.com/v1",
+    "openrouter_model": "gpt-oss-120b",
+    "genesis_model": ""
   },
   "security": {
     "vault_passphrase": "",
