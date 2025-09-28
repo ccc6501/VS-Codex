@@ -220,13 +220,7 @@ export const api = {
     test: body => fetchJSON('/storage/test', { method: 'POST', body }),
   },
   budget: {
-    import: formData => fetch('/budget/import', { method: 'POST', body: formData })
-      .then(async res => {
-        const text = await res.text();
-        const payload = text ? JSON.parse(text) : {};
-        if (!res.ok) throw new Error(payload.detail || payload.error || res.statusText);
-        return payload;
-      }),
+    import: formData => fetchJSON('/budget/import', { method: 'POST', body: formData }),
   },
 };
 
