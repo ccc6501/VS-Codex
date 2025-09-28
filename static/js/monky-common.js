@@ -109,8 +109,8 @@ export function createElement(tag, attrs = {}, ...children) {
 }
 
 export async function copyToClipboard(text) {
-  if (!navigator.clipboard) {
-    showToast('Clipboard API not available in this browser.', 'danger');
+  if (!navigator.clipboard || !window.isSecureContext) {
+    showToast('Clipboard API not available in this browser or insecure context.', 'danger');
     return false;
   }
   try {
