@@ -2397,7 +2397,7 @@ if __name__ == "__main__":
         print(f"[MONKY] Failed to find available port: {exc}")
         raise
 
-    def _handle_signal(signum, frame):  # pragma: no cover - system signal
+    def _handle_signal(_signum, _frame):  # pragma: no cover - system signal
         shutdown_application(0)
 
     try:
