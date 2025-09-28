@@ -1,12 +1,12 @@
 {
   "server": {
     "host": "127.0.0.1",
-    "port": 8050
+    "port": 5050
   },
   "features": {
     "work": true,
     "home": true,
-    "mobile": true,
+    "mobile": false,
     "sensor_simulation": true,
     "assistant_embeddings": false
   },
@@ -19,17 +19,48 @@
   },
   "integrations": {
     "openrouter_key": "",
+    "openrouter_model": "openrouter/auto",
     "genesis_key": "",
-    "default_model": "monky-local"
+    "genesis_model": "llama-3.3-70b-instruct",
+    "default_model": "monky-local",
+    "openai_key": "",
+    "openai_model": "gpt-4o-mini",
+    "openai_base": "https://api.openai.com/v1",
+    "qwen_key": "",
+    "qwen_model": "qwen-turbo",
+    "qwen_base": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    "ollama_host": "http://localhost:11434",
+    "ollama_home_model": "llama3",
+    "genesis_base": "https://api.ai.us.lmco.com/v1"
   },
   "security": {
     "vault_passphrase": "",
     "vault_pin": "1234"
   },
   "network": {
-    "sync_relay_url": ""
+    "sync_relay_url": "",
+    "host_ip": "",
+    "router_ip": ""
   },
   "apps": {
     "default": "work"
+  },
+  "storage": {
+    "work": {
+      "provider": "local",
+      "root": "storage/work"
+    },
+    "home": {
+      "provider": "local",
+      "root": "storage/home"
+    },
+    "shared": {
+      "provider": "filesystem",
+      "sync_provider": "google_drive",
+      "mount_path": "storage/shared"
+    }
+  },
+  "connectivity": {
+    "poll_seconds": 20
   }
 }

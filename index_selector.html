@@ -5,55 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Launch MONKY</title>
   <style>
+    :root {
+      color-scheme: dark;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 20% 20%, rgba(88, 247, 255, 0.12), transparent 45%),
-        radial-gradient(circle at 80% 10%, rgba(126, 111, 255, 0.18), transparent 50%),
-        #05060a;
-      color: #f5f8ff;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
+      padding: 32px;
+      background: radial-gradient(circle at 18% 20%, rgba(98, 245, 255, 0.12), transparent 45%),
+                  radial-gradient(circle at 82% 10%, rgba(138, 125, 255, 0.2), transparent 52%),
+                  #04060d;
+      color: #edf3ff;
     }
-    .card {
-      padding: 40px;
-      border-radius: 28px;
-      border: 1px solid rgba(40, 45, 68, 0.9);
-      background: rgba(10, 12, 20, 0.92);
-      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+    .shell {
+      width: min(780px, 96vw);
       display: grid;
-      gap: 24px;
-      text-align: center;
-      min-width: min(520px, 92vw);
+      gap: 28px;
+      padding: clamp(32px, 6vw, 48px);
+      border-radius: 32px;
+      border: 1px solid rgba(70, 84, 132, 0.4);
+      background: rgba(10, 12, 22, 0.9);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45);
     }
-    h1 { margin: 0; letter-spacing: 0.32rem; font-size: 1.6rem; }
-    .options { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-    a {
+    h1 {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.32rem;
+      font-size: clamp(1.4rem, 3vw, 1.8rem);
+    }
+    .meta {
+      color: #9ca9cc;
+      font-size: 0.95rem;
+    }
+    .options {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .option {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px 20px 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(98, 245, 255, 0.32);
+      background: rgba(16, 18, 32, 0.9);
       text-decoration: none;
       color: inherit;
-      padding: 14px 16px;
-      border-radius: 18px;
-      border: 1px solid rgba(88, 247, 255, 0.35);
-      background: rgba(88, 247, 255, 0.08);
-      transition: 0.2s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.08rem;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
-    a:hover { box-shadow: 0 18px 40px rgba(88, 247, 255, 0.25); transform: translateY(-2px); }
-    .subtle { color: #9aa4c0; font-size: 0.9rem; }
+    .option:hover {
+      transform: translateY(-3px);
+      border-color: rgba(98, 245, 255, 0.55);
+      box-shadow: 0 24px 48px rgba(98, 245, 255, 0.22);
+    }
+    .option h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: 0.08rem;
+      text-transform: uppercase;
+    }
+    .option p {
+      margin: 0;
+      color: #9ca9cc;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .option.hidden {
+      display: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(98, 245, 255, 0.24);
+      background: rgba(98, 245, 255, 0.12);
+      color: #62f5ff;
+      font-size: 0.7rem;
+      letter-spacing: 0.08rem;
+      text-transform: uppercase;
+    }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      color: #6f7c9c;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Launch M.O.N.K.Y</h1>
-    <div class="subtle">Select a cockpit to enter</div>
-    <div class="options">
-      <a href="/work">Work</a>
-      <a href="/home">Home</a>
-      <a href="/m">Mobile</a>
+  <div class="shell">
+    <div>
+      <h1>Launch MONKY</h1>
+      <div class="meta">Unified cockpit launcher · choose your control surface</div>
     </div>
+    <div class="options">
+      <a class="option" id="opt-work" href="/work">
+        <span class="badge">Work</span>
+        <h2>Work MONKY</h2>
+        <p>Ship ops dashboards, plan sprints, and collaborate inside the neon cockpit.</p>
+      </a>
+      <a class="option" id="opt-home" href="/home">
+        <span class="badge">Home</span>
+        <h2>Home MONKY</h2>
+        <p>Track budgets, household tasks, and live sensor telemetry from your local hub.</p>
+      </a>
+      <a class="option" id="opt-server" href="/server">
+        <span class="badge">Server</span>
+        <h2>Server MONKY</h2>
+        <p>Manage providers, diagnostics, storage checks, and assistant routing for MONKY.</p>
+      </a>
+      <a class="option" id="opt-mobile" href="/m">
+        <span class="badge">Mobile</span>
+        <h2>Mobile MONKY</h2>
+        <p>Compact cockpit for quick checks and on-the-go assistant chats.</p>
+      </a>
+    </div>
+    <footer>
+      <span>Local-first • python + sqlite</span>
+      <span id="env-summary"></span>
+    </footer>
   </div>
+  <script type="module">
+    try {
+      const res = await fetch('/env');
+      if (res.ok) {
+        const env = await res.json();
+        const features = env.features || {};
+        if (features.work === false) document.getElementById('opt-work').classList.add('hidden');
+        if (features.home === false) document.getElementById('opt-home').classList.add('hidden');
+        if (features.mobile === false) document.getElementById('opt-mobile').classList.add('hidden');
+        document.getElementById('env-summary').textContent = `Embeddings ${env.assistant_embeddings ? 'on' : 'off'}`;
+      }
+    } catch (err) {
+      console.warn('Failed to load env flags', err);
+    }
+  </script>
 </body>
 </html>

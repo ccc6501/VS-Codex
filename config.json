@@ -1,26 +1,26 @@
 {
   "server": {
     "host": "127.0.0.1",
-    "port": 5080
+    "port": 5051
   },
   "features": {
-    "work": false,
+    "work": true,
     "home": true,
-    "mobile": true,
+    "mobile": false,
     "sensor_simulation": true,
-    "assistant_embeddings": true
+    "assistant_embeddings": false
   },
   "paths": {
-    "desktop_export": "C:\\Users\\Chance\\Desktop\\Home",
-    "icons_dir": "C:\\Users\\Chance\\Desktop\\Home\\icons",
-    "avatar_path": "C:\\Users\\Chance\\Desktop\\Home\\avatar",
-    "rag_docs_dir": "C:\\Users\\Chance\\Desktop\\Home\\rag",
-    "db_path": "C:\\Users\\Chance\\Desktop\\Home\\sql"
+    "desktop_export": "",
+    "icons_dir": "",
+    "avatar_path": "",
+    "rag_docs_dir": "",
+    "db_path": "monky.db"
   },
   "integrations": {
     "openrouter_key": "",
     "genesis_key": "",
-    "default_model": "gpt-oss-120b",
+    "default_model": "monky-local",
     "openai_key": "",
     "openai_model": "gpt-4o-mini",
     "openai_base": "https://api.openai.com/v1",
@@ -29,11 +29,13 @@
     "qwen_base": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
     "ollama_host": "http://localhost:11434",
     "ollama_home_model": "llama3",
-    "genesis_base": "https://api.ai.us.lmco.com/v1"
+    "genesis_base": "https://api.ai.us.lmco.com/v1",
+    "openrouter_model": "gpt-oss-120b",
+    "genesis_model": ""
   },
   "security": {
-    "vault_passphrase": "6501",
-    "vault_pin": "6501"
+    "vault_passphrase": "",
+    "vault_pin": "1234"
   },
   "network": {
     "sync_relay_url": "",
@@ -41,12 +43,16 @@
     "router_ip": ""
   },
   "apps": {
-    "default": "home"
+    "default": "work"
   },
   "storage": {
     "work": {
       "provider": "local",
       "root": "storage/work"
+    },
+    "home": {
+      "provider": "local",
+      "root": "storage/home"
     },
     "shared": {
       "provider": "filesystem",

@@ -1,3 +1,12 @@
+"""First run configuration wizard for MONKY.
+
+Provides both a Tkinter GUI and a CLI fallback so the wizard can run on
+headless systems. The wizard persists values to config.json and can kick
+off the MONKY launcher after saving.
+"""
+
+from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -5,95 +14,183 @@ import subprocess
 import sys
 import threading
 import tkinter as tk
+from copy import deepcopy
 from pathlib import Path
 from tkinter import filedialog, messagebox
-from typing import Any, Dict
+from typing import Any, Dict, Iterable, List, Tuple
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
 TEMPLATE_PATH = BASE_DIR / "config_template.json"
-ENV_PATH = BASE_DIR / ".env"
 
-
-def load_template_data() -> Dict[str, Any]:
-    data: Dict[str, Any] = {}
-    if TEMPLATE_PATH.exists():
-        try:
-            with TEMPLATE_PATH.open("r", encoding="utf-8") as fh:
-                data = json.load(fh)
-        except Exception:
-            data = {}
-
-    def ensure(path, value):
-        target = data
-        for key in path[:-1]:
-            target = target.setdefault(key, {})
-        target.setdefault(path[-1], value)
-
-    ensure(["server", "host"], "127.0.0.1")
-    ensure(["server", "port"], 8050)
-    ensure(["features"], {
+DEFAULT_TEMPLATE: Dict[str, Any] = {
+    "server": {"host": "127.0.0.1", "port": 5050},
+    "features": {
         "work": True,
         "home": True,
-        "mobile": True,
-        "sensor_simulation": True,
+        "mobile": False,
         "assistant_embeddings": False,
-    })
-    ensure(["paths"], {
+    },
+    "paths": {
         "desktop_export": "",
         "icons_dir": "",
         "avatar_path": "",
         "rag_docs_dir": "",
         "db_path": "monky.db",
-    })
-    integrations = data.setdefault("integrations", {})
-    integrations.setdefault("openrouter_key", "")
-    integrations.setdefault("genesis_key", "")
-    integrations.setdefault("default_model", "monky-local")
-    integrations.setdefault("openai_key", "")
-    integrations.setdefault("openai_model", "gpt-4o-mini")
-    integrations.setdefault("openai_base", "https://api.openai.com/v1")
-    integrations.setdefault("qwen_key", "")
-    integrations.setdefault("qwen_model", "qwen-turbo")
-    integrations.setdefault("qwen_base", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
-    integrations.setdefault("ollama_host", "http://localhost:11434")
-    integrations.setdefault("ollama_home_model", "llama3")
-    integrations.setdefault("genesis_base", "https://api.ai.us.lmco.com/v1")
-    ensure(["security", "vault_passphrase"], "")
-    ensure(["security", "vault_pin"], "1234")
-    network = data.setdefault("network", {})
-    network.setdefault("sync_relay_url", "")
-    network.setdefault("host_ip", "")
-    network.setdefault("router_ip", "")
-    storage = data.setdefault("storage", {})
-    storage.setdefault("work", {"provider": "local", "root": "storage/work"})
-    storage.setdefault(
-        "shared",
-        {
+    },
+    "integrations": {
+        "openrouter_key": "",
+        "openrouter_model": "openrouter/auto",
+        "genesis_key": "",
+        "genesis_model": "llama-3.3-70b-instruct",
+        "default_model": "monky-local",
+        "openai_key": "",
+        "openai_model": "gpt-4o-mini",
+        "openai_base": "https://api.openai.com/v1",
+        "qwen_key": "",
+        "qwen_model": "qwen-turbo",
+        "qwen_base": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+        "ollama_host": "http://localhost:11434",
+        "ollama_home_model": "llama3",
+        "genesis_base": "https://api.ai.us.lmco.com/v1",
+    },
+    "security": {"vault_passphrase": "", "vault_pin": "1234"},
+    "network": {"sync_relay_url": "", "host_ip": "", "router_ip": ""},
+    "apps": {"default": "work"},
+    "storage": {
+        "work": {"provider": "local", "root": "storage/work"},
+        "home": {"provider": "local", "root": "storage/home"},
+        "shared": {
             "provider": "filesystem",
             "sync_provider": "google_drive",
             "mount_path": "storage/shared",
         },
-    )
-    connectivity = data.setdefault("connectivity", {})
-    connectivity.setdefault("poll_seconds", 20)
-    apps = data.setdefault("apps", {})
-    apps.setdefault("default", "work")
-    return data
+    },
+    "connectivity": {"poll_seconds": 20},
+}
+
+ENTRY_FIELDS: List[Dict[str, Any]] = [
+    {"label": "HTTP Host", "path": ("server", "host")},
+    {"label": "HTTP Port", "path": ("server", "port"), "coerce": int},
+    {"label": "OpenRouter API key", "path": ("integrations", "openrouter_key")},
+    {"label": "OpenRouter model", "path": ("integrations", "openrouter_model")},
+    {"label": "Genesis API key", "path": ("integrations", "genesis_key")},
+    {"label": "Genesis model", "path": ("integrations", "genesis_model")},
+    {"label": "Default model", "path": ("integrations", "default_model")},
+    {"label": "OpenAI API key", "path": ("integrations", "openai_key")},
+    {"label": "OpenAI model", "path": ("integrations", "openai_model")},
+    {"label": "OpenAI base URL", "path": ("integrations", "openai_base")},
+    {"label": "Qwen API key", "path": ("integrations", "qwen_key")},
+    {"label": "Qwen model", "path": ("integrations", "qwen_model")},
+    {"label": "Qwen base URL", "path": ("integrations", "qwen_base")},
+    {"label": "Ollama host", "path": ("integrations", "ollama_host")},
+    {"label": "Home Ollama model", "path": ("integrations", "ollama_home_model")},
+    {"label": "Genesis base URL", "path": ("integrations", "genesis_base")},
+    {"label": "Vault passphrase", "path": ("security", "vault_passphrase")},
+    {"label": "Vault PIN", "path": ("security", "vault_pin")},
+    {"label": "Desktop export directory", "path": ("paths", "desktop_export"), "browse": "dir"},
+    {"label": "Icons directory", "path": ("paths", "icons_dir"), "browse": "dir"},
+    {"label": "Avatar path", "path": ("paths", "avatar_path"), "browse": "file"},
+    {"label": "RAG docs directory", "path": ("paths", "rag_docs_dir"), "browse": "dir"},
+    {"label": "SQLite database", "path": ("paths", "db_path"), "browse": "file"},
+    {"label": "Sync relay URL", "path": ("network", "sync_relay_url")},
+    {"label": "Host IP", "path": ("network", "host_ip")},
+    {"label": "Router IP", "path": ("network", "router_ip")},
+    {"label": "Default cockpit (work/home/m)", "path": ("apps", "default")},
+    {"label": "Connectivity poll (s)", "path": ("connectivity", "poll_seconds"), "coerce": int},
+    {"label": "Work storage root", "path": ("storage", "work", "root"), "browse": "dir"},
+    {"label": "Shared storage mount", "path": ("storage", "shared", "mount_path"), "browse": "dir"},
+    {"label": "Home storage root", "path": ("storage", "home", "root"), "browse": "dir"},
+    {"label": "Shared storage provider", "path": ("storage", "shared", "provider")},
+    {"label": "Shared sync provider", "path": ("storage", "shared", "sync_provider")},
+]
+
+TOGGLE_FIELDS: List[Tuple[str, Tuple[str, ...]]] = [
+    ("Work MONKY", ("features", "work")),
+    ("Home MONKY", ("features", "home")),
+    ("Mobile MONKY", ("features", "mobile")),
+    ("Assistant embeddings", ("features", "assistant_embeddings")),
+]
+
+
+def deep_update(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+    """Recursively merge *override* into *base*."""
+
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            deep_update(base[key], value)
+        else:
+            base[key] = value
+    return base
+
+
+def load_template_data() -> Dict[str, Any]:
+    config = deepcopy(DEFAULT_TEMPLATE)
+    if TEMPLATE_PATH.exists():
+        try:
+            data = json.loads(TEMPLATE_PATH.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                deep_update(config, data)
+        except Exception:
+            pass
+    if CONFIG_PATH.exists():
+        try:
+            data = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                deep_update(config, data)
+        except Exception:
+            pass
+    return config
+
+
+def get_nested(data: Dict[str, Any], path: Iterable[str], default: Any = "") -> Any:
+    current: Any = data
+    for key in path:
+        if not isinstance(current, dict) or key not in current:
+            return default
+        current = current[key]
+    return current
+
+
+def set_nested(data: Dict[str, Any], path: Iterable[str], value: Any) -> None:
+    path = tuple(path)
+    if not path:
+        return
+    current = data
+    for key in path[:-1]:
+        if key not in current or not isinstance(current[key], dict):
+            current[key] = {}
+        current = current[key]
+    current[path[-1]] = value
+
+
+def launch_monky_process() -> None:
+    python = sys.executable
+    if os.name == "nt":
+        pythonw = Path(python).with_name("pythonw.exe")
+        if pythonw.exists():
+            python = str(pythonw)
+    subprocess.Popen([python, str(BASE_DIR / "launch_monky.py")])
+
+
+def write_config(config: Dict[str, Any]) -> None:
+    CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
 
 
 class WizardApp(tk.Tk):
-    def __init__(self):
+    def __init__(self, *, auto_launch: bool = True):
         super().__init__()
         self.title("MONKY Setup Wizard")
         self.configure(bg="#090b13")
         self.resizable(False, False)
+        self.auto_launch = auto_launch
         self.template = load_template_data()
-        self.entries = {}
-        self.checks = {}
+        self.entries: Dict[Tuple[str, ...], tk.Entry] = {}
+        self.entry_meta: Dict[Tuple[str, ...], Dict[str, Any]] = {}
+        self.checks: Dict[Tuple[str, ...], tk.BooleanVar] = {}
         self.create_widgets()
 
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         title = tk.Label(
             self,
             text="Welcome to MONKY",
@@ -113,87 +210,49 @@ class WizardApp(tk.Tk):
 
         row = 2
 
-        def add_entry(label, key_path, placeholder="", browse=False):
-            nonlocal row
+        for field in ENTRY_FIELDS:
+            label = field["label"]
+            path = tuple(field["path"])
+            browse = field.get("browse")
+            current = get_nested(self.template, path, "")
+            placeholder = "" if current is None else str(current)
+
             tk.Label(self, text=label, fg="#f5f8ff", bg="#090b13", anchor="w").grid(
                 row=row, column=0, sticky="w", padx=(24, 12), pady=6
             )
             entry = tk.Entry(self, width=38, fg="#05060a", bg="#e2e8ff")
             entry.insert(0, placeholder)
             entry.grid(row=row, column=1, padx=(0, 12), pady=6, sticky="we")
-            self.entries[key_path] = entry
+            self.entries[path] = entry
+            self.entry_meta[path] = field
+
             if browse:
-                btn = tk.Button(self, text="Browse", command=lambda: self.browse_path(entry, browse))
+                btn = tk.Button(self, text="Browse", command=lambda e=entry, m=browse: self.browse_path(e, m))
                 btn.grid(row=row, column=2, padx=(0, 24), pady=6)
             else:
                 spacer = tk.Label(self, text="", bg="#090b13")
                 spacer.grid(row=row, column=2, padx=(0, 24), pady=6)
             row += 1
 
-        add_entry("HTTP Host", ("server", "host"), self.template["server"].get("host", "127.0.0.1"))
-        add_entry("HTTP Port", ("server", "port"), str(self.template["server"].get("port", 5050)))
-        add_entry("OpenRouter API key", ("integrations", "openrouter_key"), self.get_template_value(("integrations", "openrouter_key"), ""))
-        add_entry("Genesis API key", ("integrations", "genesis_key"), self.get_template_value(("integrations", "genesis_key"), ""))
-        add_entry("Default model", ("integrations", "default_model"), self.get_template_value(("integrations", "default_model"), "monky-local"))
-        add_entry("OpenAI API key", ("integrations", "openai_key"), self.get_template_value(("integrations", "openai_key"), ""))
-        add_entry("OpenAI model", ("integrations", "openai_model"), self.get_template_value(("integrations", "openai_model"), "gpt-4o-mini"))
-        add_entry("OpenAI base URL", ("integrations", "openai_base"), self.get_template_value(("integrations", "openai_base"), "https://api.openai.com/v1"))
-        add_entry("Qwen API key", ("integrations", "qwen_key"), self.get_template_value(("integrations", "qwen_key"), ""))
-        add_entry("Qwen model", ("integrations", "qwen_model"), self.get_template_value(("integrations", "qwen_model"), "qwen-turbo"))
-        add_entry("Qwen base URL", ("integrations", "qwen_base"), self.get_template_value(("integrations", "qwen_base"), "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"))
-        add_entry("Ollama host", ("integrations", "ollama_host"), self.get_template_value(("integrations", "ollama_host"), "http://localhost:11434"))
-        add_entry("Home Ollama model", ("integrations", "ollama_home_model"), self.get_template_value(("integrations", "ollama_home_model"), "llama3"))
-        add_entry("Genesis base URL", ("integrations", "genesis_base"), self.get_template_value(("integrations", "genesis_base"), "https://api.ai.us.lmco.com/v1"))
-        add_entry("Vault passphrase", ("security", "vault_passphrase"), "")
-        add_entry("Vault PIN", ("security", "vault_pin"), self.template["security"].get("vault_pin", "1234"))
-        add_entry("Desktop export directory", ("paths", "desktop_export"), self.template["paths"].get("desktop_export", ""), browse="dir")
-        add_entry("Icons directory", ("paths", "icons_dir"), self.template["paths"].get("icons_dir", ""), browse="dir")
-        add_entry("Avatar path", ("paths", "avatar_path"), self.template["paths"].get("avatar_path", ""), browse="file")
-        add_entry("RAG docs directory", ("paths", "rag_docs_dir"), self.template["paths"].get("rag_docs_dir", ""), browse="dir")
-        add_entry("SQLite database", ("paths", "db_path"), self.template["paths"].get("db_path", "monky.db"), browse="file")
-        add_entry("Sync relay URL", ("network", "sync_relay_url"), self.get_template_value(("network", "sync_relay_url"), ""))
-        add_entry("Host IP", ("network", "host_ip"), self.get_template_value(("network", "host_ip"), ""))
-        add_entry("Router IP", ("network", "router_ip"), self.get_template_value(("network", "router_ip"), ""))
-        add_entry("Default cockpit (work/home/m)", ("apps", "default"), self.template["apps"].get("default", "work"))
-        add_entry("Work storage root", ("storage", "work", "root"), self.get_template_value(("storage", "work", "root"), "storage/work"), browse="dir")
-        add_entry(
-            "Shared storage mount",
-            ("storage", "shared", "mount_path"),
-            self.get_template_value(("storage", "shared", "mount_path"), "storage/shared"),
-            browse="dir",
-        )
-        add_entry(
-            "Shared storage provider",
-            ("storage", "shared", "provider"),
-            self.get_template_value(("storage", "shared", "provider"), "filesystem"),
-        )
-        add_entry(
-            "Shared sync provider",
-            ("storage", "shared", "sync_provider"),
-            self.get_template_value(("storage", "shared", "sync_provider"), "google_drive"),
-        )
-        add_entry(
-            "Connectivity poll (s)",
-            ("connectivity", "poll_seconds"),
-            str(self.get_template_value(("connectivity", "poll_seconds"), 20)),
-        )
-
         tk.Label(self, text="Enable apps", fg="#f5f8ff", bg="#090b13", anchor="w").grid(
             row=row, column=0, padx=(24, 12), pady=(18, 6), sticky="w"
         )
         row += 1
-        toggles = [
-            ("Work MONKY", ("features", "work")),
-            ("Home MONKY", ("features", "home")),
-            ("Mobile MONKY", ("features", "mobile")),
-            ("Sensor simulation", ("features", "sensor_simulation")),
-            ("Assistant embeddings", ("features", "assistant_embeddings")),
-        ]
-        for label, key in toggles:
-            var = tk.BooleanVar(value=self.get_template_value(key, True))
-            chk = tk.Checkbutton(self, text=label, variable=var, fg="#d2dcff", bg="#090b13", activebackground="#090b13")
+
+        for label, path in TOGGLE_FIELDS:
+            value = bool(get_nested(self.template, path, True))
+            var = tk.BooleanVar(value=value)
+            chk = tk.Checkbutton(
+                self,
+                text=label,
+                variable=var,
+                fg="#d2dcff",
+                bg="#090b13",
+                activebackground="#090b13",
+                selectcolor="#141a2a",
+            )
             chk.grid(row=row, column=0, columnspan=2, padx=(24, 12), sticky="w")
-            self.checks[key] = var
+            self.checks[tuple(path)] = var
             row += 1
 
         footer = tk.Frame(self, bg="#090b13")
@@ -201,7 +260,7 @@ class WizardApp(tk.Tk):
         tk.Button(footer, text="Cancel", command=self.destroy).pack(side=tk.RIGHT, padx=6)
         tk.Button(footer, text="Save & Launch", command=self.save_config).pack(side=tk.RIGHT, padx=6)
 
-    def browse_path(self, entry, mode):
+    def browse_path(self, entry: tk.Entry, mode: str) -> None:
         if mode == "dir":
             path = filedialog.askdirectory()
         else:
@@ -210,127 +269,62 @@ class WizardApp(tk.Tk):
             entry.delete(0, tk.END)
             entry.insert(0, path)
 
-    def get_template_value(self, key_path, default=None):
-        data = self.template
-        for key in key_path:
-            if isinstance(data, dict) and key in data:
-                data = data[key]
-            else:
-                return default
-        return data
-
-    def save_config(self):
+    def save_config(self) -> None:
         config = self.template
-        for key_path, entry in self.entries.items():
-            value = entry.get().strip()
-            target = config
-            for key in key_path[:-1]:
-                target = target.setdefault(key, {})
-            leaf = key_path[-1]
-            if leaf in {"port", "poll_seconds"}:
+        for path, entry in self.entries.items():
+            field = self.entry_meta[path]
+            raw = entry.get().strip()
+            coerce = field.get("coerce")
+
+            if coerce is int:
+                if not raw:
+                    continue  # keep previous value
                 try:
-                    target[leaf] = int(value)
+                    value = int(raw)
                 except ValueError:
-                    messagebox.showerror("Invalid value", f"{leaf.replace('_', ' ').title()} must be an integer")
+                    messagebox.showerror("Invalid value", f"{field['label']} must be an integer")
                     return
             else:
-                target[leaf] = value
-        for key_path, var in self.checks.items():
-            target = config
-            for key in key_path[:-1]:
-                target = target.setdefault(key, {})
-            target[key_path[-1]] = bool(var.get())
+                value = raw
 
-        CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
-        update_env_from_config(config)
+            set_nested(config, path, value)
+
+        for path, var in self.checks.items():
+            set_nested(config, path, bool(var.get()))
+
+        write_config(config)
         messagebox.showinfo("Saved", f"Configuration saved to {CONFIG_PATH}")
-        self.after(300, self.launch_monky)
 
-def launch_monky(self):
-        self.destroy()
+        if self.auto_launch:
+            self.after(300, self.launch_monky)
+        else:
+            self.after(100, self.destroy)
+
+    def launch_monky(self) -> None:
+        if not self.auto_launch:
+            return
+
         def _launch():
             try:
-                python = sys.executable
-                if os.name == "nt":
-                    pythonw = Path(python).with_name("pythonw.exe")
-                    if pythonw.exists():
-                        python = str(pythonw)
-                subprocess.Popen([python, str(BASE_DIR / "launch_monky.py")])
-            except Exception as exc:
-                messagebox.showerror("Launch failed", str(exc))
+                launch_monky_process()
+            except Exception as exc:  # pragma: no cover - GUI fallback
+                self.after(0, lambda: messagebox.showerror("Launch failed", str(exc)))
+
         threading.Thread(target=_launch, daemon=True).start()
+        self.after(200, self.destroy)
 
 
-def update_env_from_config(config: Dict[str, Any]) -> None:
-    env_values = _read_env()
-    integrations = config.get("integrations", {})
-
-    mapping = {
-        "OPENAI_API_KEY": integrations.get("openai_key", ""),
-        "OPENAI_MODEL": integrations.get("openai_model", ""),
-        "OPENAI_BASE_URL": integrations.get("openai_base", ""),
-        "OPENROUTER_API_KEY": integrations.get("openrouter_key", ""),
-        "GENESIS_API_KEY": integrations.get("genesis_key", ""),
-        "GENESIS_BASE_URL": integrations.get("genesis_base", ""),
-        "QWEN_API_KEY": integrations.get("qwen_key", ""),
-        "QWEN_BASE_URL": integrations.get("qwen_base", ""),
-        "QWEN_MODEL": integrations.get("qwen_model", ""),
-        "OLLAMA_HOST": integrations.get("ollama_host", ""),
-    }
-
-    changed = False
-    for key, value in mapping.items():
-        value = value or ""
-        if value:
-            if env_values.get(key) != value:
-                env_values[key] = value
-                changed = True
-        elif key in env_values:
-            del env_values[key]
-            changed = True
-
-    if changed or not ENV_PATH.exists():
-        lines = [f"{k}={v}" for k, v in sorted(env_values.items())]
-        ENV_PATH.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
-
-
-def _read_env() -> Dict[str, str]:
-    env: Dict[str, str] = {}
-    if not ENV_PATH.exists():
-        return env
-    for line in ENV_PATH.read_text(encoding="utf-8").splitlines():
-        striped = line.strip()
-        if not striped or striped.startswith("#"):
-            continue
-        if "=" in striped:
-            key, value = striped.split("=", 1)
-            env[key.strip()] = value.strip()
-    return env
-
-
-def _deep_update(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
-    for key, value in override.items():
-        if isinstance(value, dict) and isinstance(base.get(key), dict):
-            _deep_update(base[key], value)
-        else:
-            base[key] = value
-    return base
-
-
-def _prompt(text: str, default: str = "") -> str:
-    prompt_text = f"{text}"
-    if default:
-        prompt_text += f" [{default}]"
-    prompt_text += ": "
+def prompt(text: str, default: str = "") -> str:
+    suffix = f" [{default}]" if default else ""
     try:
-        value = input(prompt_text)
+        value = input(f"{text}{suffix}: ")
     except EOFError:
         value = ""
     value = value.strip()
-    return value or default
+    return value if value else default
 
 
-def _prompt_bool(text: str, default: bool) -> bool:
+def prompt_bool(text: str, default: bool) -> bool:
     suffix = "Y/n" if default else "y/N"
     try:
         value = input(f"{text} [{suffix}]: ").strip().lower()
@@ -341,134 +335,64 @@ def _prompt_bool(text: str, default: bool) -> bool:
     return value in {"y", "yes", "1", "true"}
 
 
-def run_cli_wizard(skip_launch: bool = False) -> None:
+def run_cli_wizard(*, auto_launch: bool) -> None:
     print("MONKY Setup Wizard (CLI)")
     print("Press Enter to keep the value shown in brackets.")
 
     config = load_template_data()
-    if CONFIG_PATH.exists():
-        try:
-            existing = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-            _deep_update(config, existing)
-        except Exception:
-            pass
 
-    server = config.setdefault("server", {})
-    server["host"] = _prompt("HTTP host", str(server.get("host", "127.0.0.1")))
-    while True:
-        port_value = _prompt("HTTP port", str(server.get("port", 5050)))
-        try:
-            server["port"] = int(port_value)
-            break
-        except ValueError:
-            print("Port must be an integer.")
+    for field in ENTRY_FIELDS:
+        path = tuple(field["path"])
+        current = get_nested(config, path, "")
+        default = "" if current is None else str(current)
+        value = prompt(field["label"], default)
+        if not value:
+            continue
+        if field.get("coerce") is int:
+            try:
+                value_int = int(value)
+            except ValueError:
+                print(f"{field['label']} must be an integer. Value unchanged.")
+                continue
+            set_nested(config, path, value_int)
+        else:
+            set_nested(config, path, value)
 
-    integrations = config.setdefault("integrations", {})
-    integrations["openrouter_key"] = _prompt("OpenRouter API key", integrations.get("openrouter_key", ""))
-    integrations["genesis_key"] = _prompt("Genesis API key", integrations.get("genesis_key", ""))
-    integrations["default_model"] = _prompt("Default model", integrations.get("default_model", "monky-local"))
-    integrations["openai_key"] = _prompt("OpenAI API key", integrations.get("openai_key", ""))
-    integrations["openai_model"] = _prompt("OpenAI model", integrations.get("openai_model", "gpt-4o-mini"))
-    integrations["openai_base"] = _prompt("OpenAI base URL", integrations.get("openai_base", "https://api.openai.com/v1"))
-    integrations["qwen_key"] = _prompt("Qwen API key", integrations.get("qwen_key", ""))
-    integrations["qwen_model"] = _prompt("Qwen model", integrations.get("qwen_model", "qwen-turbo"))
-    integrations["qwen_base"] = _prompt(
-        "Qwen base URL",
-        integrations.get("qwen_base", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"),
-    )
-    integrations["ollama_host"] = _prompt("Ollama host", integrations.get("ollama_host", "http://localhost:11434"))
-    integrations["ollama_home_model"] = _prompt("Home Ollama model", integrations.get("ollama_home_model", "llama3"))
-    integrations["genesis_base"] = _prompt(
-        "Genesis base URL",
-        integrations.get("genesis_base", "https://api.ai.us.lmco.com/v1"),
-    )
+    for label, path in TOGGLE_FIELDS:
+        current = bool(get_nested(config, path, True))
+        result = prompt_bool(label, current)
+        set_nested(config, path, result)
 
-    security = config.setdefault("security", {})
-    security["vault_passphrase"] = _prompt("Vault passphrase", security.get("vault_passphrase", ""))
-    security["vault_pin"] = _prompt("Vault PIN", security.get("vault_pin", "1234"))
-
-    paths = config.setdefault("paths", {})
-    paths["desktop_export"] = _prompt("Desktop export directory", paths.get("desktop_export", ""))
-    paths["icons_dir"] = _prompt("Icons directory", paths.get("icons_dir", ""))
-    paths["avatar_path"] = _prompt("Avatar path", paths.get("avatar_path", ""))
-    paths["rag_docs_dir"] = _prompt("RAG docs directory", paths.get("rag_docs_dir", ""))
-    paths["db_path"] = _prompt("SQLite database", paths.get("db_path", "monky.db"))
-
-    network = config.setdefault("network", {})
-    network["sync_relay_url"] = _prompt("Sync relay URL", network.get("sync_relay_url", ""))
-    network["host_ip"] = _prompt("Host IP", network.get("host_ip", ""))
-    network["router_ip"] = _prompt("Router IP", network.get("router_ip", ""))
-
-    storage = config.setdefault("storage", {})
-    work_storage = storage.setdefault("work", {"provider": "local", "root": "storage/work"})
-    work_storage["root"] = _prompt("Work storage root", work_storage.get("root", "storage/work"))
-    shared_storage = storage.setdefault(
-        "shared",
-        {"provider": "filesystem", "sync_provider": "google_drive", "mount_path": "storage/shared"},
-    )
-    shared_storage["mount_path"] = _prompt("Shared storage mount", shared_storage.get("mount_path", "storage/shared"))
-    shared_storage["provider"] = _prompt("Shared storage provider", shared_storage.get("provider", "filesystem"))
-    shared_storage["sync_provider"] = _prompt(
-        "Shared sync provider", shared_storage.get("sync_provider", "google_drive")
-    )
-
-    connectivity = config.setdefault("connectivity", {})
-    while True:
-        poll_value = _prompt("Connectivity poll (seconds)", str(connectivity.get("poll_seconds", 20)))
-        try:
-            connectivity["poll_seconds"] = int(poll_value)
-            break
-        except ValueError:
-            print("Poll interval must be an integer.")
-
-    features = config.setdefault("features", {})
-    features["work"] = _prompt_bool("Enable Work MONKY", bool(features.get("work", True)))
-    features["home"] = _prompt_bool("Enable Home MONKY", bool(features.get("home", True)))
-    features["mobile"] = _prompt_bool("Enable Mobile MONKY", bool(features.get("mobile", True)))
-    features["sensor_simulation"] = _prompt_bool(
-        "Enable sensor simulation", bool(features.get("sensor_simulation", True))
-    )
-    features["assistant_embeddings"] = _prompt_bool(
-        "Enable assistant embeddings", bool(features.get("assistant_embeddings", False))
-    )
-
-    apps = config.setdefault("apps", {})
-    apps["default"] = _prompt("Default cockpit (work/home/m)", apps.get("default", "work"))
-
-    CONFIG_PATH.write_text(json.dumps(config, indent=2), encoding="utf-8")
-    update_env_from_config(config)
+    write_config(config)
     print(f"Configuration saved to {CONFIG_PATH}")
 
-    if skip_launch:
-        return
-    if _prompt_bool("Launch MONKY now?", True):
-        python = sys.executable
-        if os.name == "nt":
-            pythonw = Path(python).with_name("pythonw.exe")
-            if pythonw.exists():
-                python = str(pythonw)
-        subprocess.Popen([python, str(BASE_DIR / "launch_monky.py")])
-        print("Launcher starting…")
-    else:
-        print("You can launch later with 'python launch_monky.py'.")
+    if auto_launch:
+        try:
+            launch_monky_process()
+            print("Launcher starting…")
+        except Exception as exc:  # pragma: no cover - CLI fallback
+            print(f"Launch failed: {exc}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="MONKY setup wizard")
     parser.add_argument("--cli", action="store_true", help="Force interactive CLI mode")
     parser.add_argument("--no-launch", action="store_true", help="Do not launch MONKY after saving")
     args = parser.parse_args()
 
+    auto_launch = not args.no_launch
     headless = sys.platform.startswith("linux") and not os.environ.get("DISPLAY")
+
     if args.cli or headless:
         if headless and not args.cli:
             print("No display detected; running CLI wizard.")
-        run_cli_wizard(skip_launch=args.no_launch)
+        try:
+            run_cli_wizard(auto_launch=auto_launch)
+        except KeyboardInterrupt:
+            print("\nSetup cancelled by user.")
         return
 
-    app = WizardApp()
-    if args.no_launch:
-        os.environ["MONKY_SKIP_AUTOLAUNCH"] = "1"
+    app = WizardApp(auto_launch=auto_launch)
     app.mainloop()
 
 

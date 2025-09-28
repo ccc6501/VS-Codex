@@ -1,0 +1,250 @@
+Traceback (most recent call last):
+  File "/workspaces/VS-Codex/server.py", line 30, in <module>
+    from apscheduler.schedulers.background import BackgroundScheduler
+ModuleNotFoundError: No module named 'apscheduler'
+Traceback (most recent call last):
+  File "/workspaces/VS-Codex/server.py", line 30, in <module>
+    from apscheduler.schedulers.background import BackgroundScheduler
+ModuleNotFoundError: No module named 'apscheduler'
+ * Serving Flask app 'server'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5050
+Press CTRL+C to quit
+/workspaces/VS-Codex/server.py:779: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return jsonify({"ok": True, "time": datetime.utcnow().isoformat()})
+127.0.0.1 - - [27/Sep/2025 21:22:16] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:22:18] "GET /launch HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:22:18] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:22:18] "GET /favicon.ico HTTP/1.1" 404 -
+/workspaces/VS-Codex/server.py:712: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (sensor["id"], new_value, datetime.utcnow().isoformat()),
+/workspaces/VS-Codex/server.py:716: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (new_value, datetime.utcnow().isoformat(), status, sensor["id"]),
+/workspaces/VS-Codex/server.py:718: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=3)
+127.0.0.1 - - [27/Sep/2025 21:23:07] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:07] "GET /launch HTTP/1.1" 304 -
+ * Serving Flask app 'server'
+ * Debug mode: off
+Address already in use
+Port 5050 is in use by another program. Either identify and stop that program, or start the server with a different port.
+127.0.0.1 - - [27/Sep/2025 21:23:08] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:11] "GET /server HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:11] "GET /static/css/monky.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:11] "GET /static/js/monky-server.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:12] "GET /static/js/monky-common.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:12] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:12] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:12] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:23:46] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:02] "GET /work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:03] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:24:03] "GET /static/js/monky-work.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:03] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+/workspaces/VS-Codex/server.py:1578: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp": datetime.utcnow().isoformat(),
+127.0.0.1 - - [27/Sep/2025 21:24:03] "GET /dashboard/work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:03] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:10] "GET /assistant/providers HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:10] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:11] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:11] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:20] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:20] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:27] "POST /dev/toggles HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:29] "POST /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:35] "GET /projects HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:35] "GET /tasks HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:35] "GET /notes HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:38] "GET /kpi/datasets HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:40] "GET /rag/docs HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:40] "GET /data/assets HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:56] "GET /server HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:24:56] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:24:56] "GET /static/js/monky-server.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:24:57] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:24:57] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:57] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:24:57] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:04] "GET /launch HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:25:04] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:06] "GET /server HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:25:06] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:25:06] "GET /static/js/monky-server.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:25:06] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:25:07] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:07] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:07] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:12] "POST /dev/toggles HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:13] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:15] "POST /dev/toggles HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:15] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:17] "POST /dev/toggles HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:25:18] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:43] "POST /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:43] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:49] "GET /work HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:28:49] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:28:49] "GET /static/js/monky-work.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:28:50] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:28:50] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:50] "GET /dashboard/work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:51] "GET /assistant/providers HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:52] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:52] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:52] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+/workspaces/VS-Codex/server.py:915: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow().isoformat()
+/workspaces/VS-Codex/server.py:1035: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  if due_dt and due_dt - datetime.utcnow() <= timedelta(days=7) and bill["status"] != "paid":
+/workspaces/VS-Codex/server.py:925: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (thread_id, "assistant", reply, provider, datetime.utcnow().isoformat()),
+/workspaces/VS-Codex/server.py:941: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (datetime.utcnow().isoformat(), thread_id),
+127.0.0.1 - - [27/Sep/2025 21:28:57] "POST /assistant/send HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:28:58] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:29:07] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:29:15] "POST /assistant/send HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:29:15] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:50] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:50] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:55] "GET /home HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:55] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:31:55] "GET /static/js/monky-home.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:55] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:31:56] "GET /dashboard/home HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:56] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:57] "GET /assistant/providers HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:57] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:57] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:31:57] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:32:39] "GET /projects HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:32:39] "GET /tasks HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:32:39] "GET /notes HTTP/1.1" 200 -
+/workspaces/VS-Codex/server.py:1526: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+127.0.0.1 - - [27/Sep/2025 21:32:39] "GET /budget/summary HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:32:42] "GET /sensors HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:32:47] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:32:47] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:33:33] "GET /kpi/datasets HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:34:09] "GET /rag/docs HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:34:09] "GET /data/assets HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:38] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:38] "GET /launch HTTP/1.1" 200 -
+ * Serving Flask app 'server'
+ * Debug mode: off
+Address already in use
+Port 5050 is in use by another program. Either identify and stop that program, or start the server with a different port.
+127.0.0.1 - - [27/Sep/2025 21:53:43] "GET /work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /assistant/messages HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /tasks HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /notes HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /sensors HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /sensors/1/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /sensors/2/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:53:44] "GET /sensors/3/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:04] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /work HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /tasks HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /notes HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /assistant/messages HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /sensors HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /sensors/1/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /sensors/2/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:07] "GET /sensors/3/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:52] "GET /sensors HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:52] "GET /sensors/1/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:52] "GET /sensors/2/readings HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 21:55:52] "GET /sensors/3/readings HTTP/1.1" 200 -
+ * Serving Flask app 'server'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5051
+Press CTRL+C to quit
+/workspaces/VS-Codex/server.py:993: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return jsonify({"ok": True, "time": datetime.utcnow().isoformat()})
+127.0.0.1 - - [27/Sep/2025 22:09:57] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:09:59] "GET /launch HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:09:59] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:09:59] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Sep/2025 22:10:01] "GET /work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:01] "GET /static/css/monky.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:01] "GET /static/js/monky-work.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:01] "GET /static/js/monky-common.js HTTP/1.1" 200 -
+/workspaces/VS-Codex/server.py:1927: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp": datetime.utcnow().isoformat(),
+127.0.0.1 - - [27/Sep/2025 22:10:02] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:02] "GET /dashboard/work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:03] "GET /assistant/providers HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:04] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:04] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:04] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:07] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:07] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:14] "GET /server HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:14] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:10:14] "GET /static/js/monky-server.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:14] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:10:15] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:15] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:15] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:15] "GET /assistant/providers HTTP/1.1" 200 -
+/workspaces/VS-Codex/server.py:1312: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  if due_dt and due_dt - datetime.utcnow() <= timedelta(days=7) and bill["status"] != "paid":
+127.0.0.1 - - [27/Sep/2025 22:10:27] "GET /assistant/ping/local HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:10:40] "GET /assistant/ping/genesis HTTP/1.1" 502 -
+/workspaces/VS-Codex/server.py:926: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (sensor["id"], new_value, datetime.utcnow().isoformat()),
+/workspaces/VS-Codex/server.py:930: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (new_value, datetime.utcnow().isoformat(), status, sensor["id"]),
+/workspaces/VS-Codex/server.py:932: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=3)
+127.0.0.1 - - [27/Sep/2025 22:10:52] "GET /assistant/ping/genesis HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:11:06] "GET /assistant/ping/openrouter HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:12:02] "POST /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:12:02] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:12:02] "GET /assistant/providers HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:12:05] "GET /assistant/ping/genesis HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:12:11] "GET /assistant/ping/openrouter HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:12:45] "GET /assistant/ping/openrouter HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:13:19] "POST /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:13:20] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:13:22] "GET /assistant/ping/openrouter HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:13:29] "GET /assistant/ping/genesis HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:13:36] "GET /assistant/ping/ollama HTTP/1.1" 502 -
+127.0.0.1 - - [27/Sep/2025 22:13:53] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:13:53] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:13:56] "POST /storage/test HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:13:59] "POST /storage/test HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:14:58] "POST /storage/test HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:15:05] "POST /storage/test HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:15:08] "POST /storage/test HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:15:31] "POST /assistant/test HTTP/1.1" 401 -
+127.0.0.1 - - [27/Sep/2025 22:15:44] "POST /assistant/test HTTP/1.1" 500 -
+127.0.0.1 - - [27/Sep/2025 22:16:13] "GET /home HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:13] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:16:13] "GET /static/js/monky-home.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:14] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:16:14] "GET /dashboard/home HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:14] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:15] "GET /sensors HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:20] "GET /work HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:16:20] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:16:20] "GET /static/js/monky-work.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:16:21] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Sep/2025 22:16:21] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:21] "GET /dashboard/work HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:26] "GET /kpi/datasets HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:27] "GET /rag/docs HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:27] "GET /data/assets HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:34] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:34] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:36] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:36] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2025 22:16:54] "POST /settings/config HTTP/1.1" 200 -

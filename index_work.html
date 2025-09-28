@@ -4,952 +4,289 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Work MONKY</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #05060a;
-      --panel: #0f1119;
-      --panel-alt: #111321;
-      --outline: #1b1f2f;
-      --accent: #58f7ff;
-      --accent-soft: rgba(88, 247, 255, 0.35);
-      --text: #edf5ff;
-      --muted: #9aa4c0;
-      --danger: #ff6b81;
-      --warn: #ffa938;
-      --ok: #7cffb2;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      min-height: 100vh;
-      background: radial-gradient(circle at 20% 20%, rgba(88, 247, 255, 0.12), transparent 45%),
-        radial-gradient(circle at 80% 10%, rgba(126, 111, 255, 0.18), transparent 50%),
-        var(--bg);
-      color: var(--text);
-    }
-    .sidebar {
-      border-right: 1px solid var(--outline);
-      background: linear-gradient(180deg, rgba(10, 12, 22, 0.85) 0%, rgba(6, 7, 13, 0.94) 60%, rgba(6, 7, 13, 1) 100%);
-      padding: 32px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      letter-spacing: 0.3rem;
-      text-transform: uppercase;
-    }
-    .logo span {
-      display: inline-block;
-      background: var(--accent-soft);
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(88, 247, 255, 0.2);
-    }
-    nav {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    nav button {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--muted);
-      font-size: 0.95rem;
-      padding: 12px 14px;
-      border-radius: 12px;
-      text-align: left;
-      cursor: pointer;
-      transition: 0.2s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    nav button.active, nav button:hover {
-      border-color: var(--accent);
-      color: var(--text);
-      background: rgba(88, 247, 255, 0.08);
-      box-shadow: 0 10px 35px rgba(88, 247, 255, 0.2);
-    }
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 0.8rem;
-      color: var(--muted);
-      border-top: 1px solid var(--outline);
-      padding-top: 18px;
-    }
-    .main {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      backdrop-filter: blur(12px);
-    }
-    header.top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 28px 40px 16px 40px;
-      border-bottom: 1px solid var(--outline);
-      background: rgba(8, 10, 18, 0.85);
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-    header.top-bar .status {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-    header.top-bar .status span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(17, 19, 33, 0.8);
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid var(--outline);
-    }
-    header.top-bar .clock {
-      text-align: right;
-    }
-    header.top-bar .clock h2 {
-      margin: 0;
-      font-size: 2rem;
-      letter-spacing: 0.1rem;
-    }
-    header.top-bar .clock small {
-      color: var(--muted);
-    }
-    main.content {
-      padding: 28px 40px 48px;
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      grid-auto-rows: minmax(280px, auto);
-      gap: 24px;
-    }
-    section.panel {
-      background: linear-gradient(180deg, rgba(14, 17, 28, 0.92) 0%, rgba(10, 11, 18, 0.94) 60%, rgba(8, 9, 15, 0.98) 100%);
-      border: 1px solid rgba(30, 33, 49, 0.9);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      border-radius: 22px;
-      padding: 22px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      position: relative;
-      overflow: hidden;
-    }
-    section.panel.hidden { display: none; }
-    section.panel h3 {
-      margin: 0;
-      font-weight: 600;
-      letter-spacing: 0.08rem;
-      text-transform: uppercase;
-      font-size: 1rem;
-    }
-    section.panel .subtle {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px;
-    }
-    .metric {
-      padding: 16px;
-      background: rgba(20, 24, 38, 0.92);
-      border-radius: 16px;
-      border: 1px solid rgba(40, 45, 68, 0.8);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .metric span.value {
-      font-size: 1.6rem;
-      font-weight: 700;
-    }
-    .metric span.label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      letter-spacing: 0.08rem;
-    }
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow-y: auto;
-      max-height: 260px;
-      padding-right: 4px;
-    }
-    .list::-webkit-scrollbar {
-      width: 6px;
-    }
-    .list::-webkit-scrollbar-thumb {
-      background: rgba(88, 247, 255, 0.35);
-      border-radius: 12px;
-    }
-    .item-card {
-      border: 1px solid rgba(39, 45, 64, 0.9);
-      border-radius: 14px;
-      padding: 14px;
-      background: rgba(16, 19, 29, 0.88);
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: start;
-    }
-    .item-card h4 {
-      margin: 0;
-      font-size: 1rem;
-    }
-    .item-card p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(88, 247, 255, 0.25);
-      color: var(--accent);
-    }
-    .chart-canvas {
-      width: 100%;
-      height: 160px;
-      background: rgba(16, 19, 31, 0.7);
-      border-radius: 16px;
-      border: 1px solid rgba(38, 43, 66, 0.8);
-      position: relative;
-      overflow: hidden;
-    }
-    canvas.sparkline {
-      width: 100%;
-      height: 120px;
-    }
-    .assistant-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      height: 100%;
-    }
-    .assistant-log {
-      flex: 1;
-      overflow-y: auto;
-      border: 1px solid rgba(40, 45, 68, 0.8);
-      border-radius: 18px;
-      padding: 18px;
-      background: rgba(10, 12, 22, 0.85);
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .assistant-entry {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 12px;
-    }
-    .assistant-entry .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: radial-gradient(circle at 30% 30%, rgba(88, 247, 255, 0.6), rgba(6, 8, 16, 0.9));
-      border: 1px solid rgba(88, 247, 255, 0.4);
-    }
-    .assistant-entry.user .avatar {
-      background: linear-gradient(135deg, rgba(126, 111, 255, 0.6), rgba(23, 27, 44, 0.9));
-    }
-    .assistant-entry .bubble {
-      background: rgba(18, 21, 33, 0.92);
-      border: 1px solid rgba(48, 53, 78, 0.9);
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-    .assistant-entry.assistant .bubble {
-      border-color: rgba(88, 247, 255, 0.4);
-      box-shadow: 0 18px 40px rgba(88, 247, 255, 0.16);
-    }
-    .assistant-entry .sources {
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    form.chat-input {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-    }
-    input, textarea, select {
-      background: rgba(12, 14, 24, 0.9);
-      border: 1px solid rgba(38, 42, 65, 0.9);
-      border-radius: 12px;
-      padding: 10px 12px;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-family: inherit;
-    }
-    textarea { resize: vertical; min-height: 120px; }
-    button.primary {
-      background: linear-gradient(135deg, rgba(88, 247, 255, 0.18), rgba(88, 247, 255, 0.45));
-      border: 1px solid rgba(88, 247, 255, 0.65);
-      color: var(--text);
-      padding: 10px 18px;
-      border-radius: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-    button.primary:hover { box-shadow: 0 12px 35px rgba(88, 247, 255, 0.3); }
-    .vault-locked {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .vault-items {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow-y: auto;
-      max-height: 260px;
-    }
-    .status-badge {
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .status-badge.ok { border-color: rgba(124, 255, 178, 0.6); color: var(--ok); }
-    .status-badge.drift { border-color: var(--warn); color: var(--warn); }
-    .status-badge.oor { border-color: var(--danger); color: var(--danger); }
-    .sensor-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .sensor-card {
-      border: 1px solid rgba(40, 45, 68, 0.9);
-      border-radius: 18px;
-      background: rgba(10, 12, 20, 0.92);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-    .sensor-card:hover { transform: translateY(-4px); border-color: var(--accent); }
-    .sensor-card canvas { width: 100%; height: 60px; }
-    .alert-banner {
-      border: 1px solid rgba(255, 105, 142, 0.65);
-      border-radius: 16px;
-      padding: 14px 18px;
-      background: rgba(48, 15, 24, 0.6);
-      color: #ffcbd6;
-    }
-    .wireframe-bot {
-      position: absolute;
-      inset: auto 12px -40px auto;
-      width: 120px;
-      opacity: 0.4;
-      pointer-events: none;
-    }
-    .drawer {
-      position: fixed;
-      inset: 0;
-      background: rgba(4, 6, 12, 0.78);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-    .drawer.active { display: flex; }
-    .drawer .card {
-      width: min(540px, 92vw);
-      background: rgba(12, 15, 25, 0.95);
-      border: 1px solid rgba(40, 45, 68, 0.9);
-      border-radius: 24px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .drawer .close-btn {
-      align-self: flex-end;
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    .drawer canvas { width: 100%; height: 160px; }
-    @media (max-width: 1080px) {
-      body { grid-template-columns: 80px 1fr; }
-      .sidebar { padding: 24px 12px; align-items: center; }
-      .logo { flex-direction: column; font-size: 0.75rem; letter-spacing: 0.2rem; }
-      .logo span { padding: 6px 8px; }
-      nav button { font-size: 0; padding: 12px; justify-content: center; }
-      nav button::after {
-        content: attr(data-label);
-        font-size: 0.75rem;
-        display: block;
-        color: var(--muted);
-        margin-top: 6px;
-      }
-      .sidebar-footer { display: none; }
-    }
-    @media (max-width: 720px) {
-      body { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      header.top-bar { padding: 18px 20px; }
-      main.content { padding: 20px; grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/monky.css" />
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="logo"><span>MONKY</span> Work</div>
-    <nav>
-      <button class="active" data-tab="projects" data-label="Projects">Projects & Notes</button>
-      <button data-tab="chat" data-label="AI">AI Chat</button>
-      <button data-tab="sensors" data-label="Sensors">Sensors</button>
-      <button data-tab="vault" data-label="Vault">Vault</button>
-      <button data-tab="dev" data-label="Dev">Dev</button>
-    </nav>
-    <div class="sidebar-footer">
-      Neon operations center<br />MONKY build <span id="build">v1.0-local</span>
-    </div>
-  </aside>
-  <div class="main">
-    <header class="top-bar">
-      <div class="status">
-        <span id="env-status">Loading env…</span>
-        <span id="sensor-alert">Sensors nominal</span>
-      </div>
-      <div class="clock">
-        <h2 id="clock-time">00:00</h2>
-        <small id="clock-date">---</small>
-      </div>
-    </header>
-    <main class="content">
-      <section class="panel" data-panel="projects">
-        <img class="wireframe-bot" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='200' viewBox='0 0 160 200' fill='none' stroke='%2358f7ff' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M50 20 L80 5 L110 20 L110 60 L80 75 L50 60 Z'/%3E%3Cpath d='M80 75 L80 130'/%3E%3Cpath d='M80 130 L40 190 L25 182 L55 120'/%3E%3Cpath d='M80 130 L120 190 L135 182 L105 120'/%3E%3Ccircle cx='65' cy='38' r='6'/%3E%3Ccircle cx='95' cy='38' r='6'/%3E%3Cpath d='M60 52 C70 58 90 58 100 52'/%3E%3C/svg%3E" alt="bot" />
+  <div class="monky-app work">
+    <aside class="monky-sidebar">
+      <div class="monky-logo"><span>MKY</span> Work</div>
+      <nav class="monky-nav" id="monky-nav">
+        <button class="active" data-tab="home">Home <span class="pill">dashboard</span></button>
+        <button data-tab="assistant">Assistant</button>
+        <button data-tab="projects">Projects · Tasks · Notes</button>
+        <button data-tab="kpi">KPI Studio</button>
+        <button data-tab="data">Data Library</button>
+        <button data-tab="vault">Vault</button>
+        <button data-tab="dev">Dev Console</button>
+      </nav>
+      <footer>
+        <div>MONKY Ops · local-first cockpit</div>
+        <div class="pill">v1.0 preview</div>
+      </footer>
+    </aside>
+
+    <div class="monky-main">
+      <header class="monky-topbar">
         <div>
-          <h3>Projects, Notes & Tasks</h3>
-          <p class="subtle">Command center for delivery scope. Drag the neon slider to keep velocity high.</p>
+          <h1 class="title">Work MONKY</h1>
+          <div class="meta" id="top-meta"></div>
         </div>
-        <div class="metric-grid">
-          <div class="metric">
-            <span class="label">Active Tasks</span>
-            <span class="value" id="metric-tasks">0</span>
-            <span class="chip" id="metric-tasks-chip">Loading…</span>
-          </div>
-          <div class="metric">
-            <span class="label">Notes</span>
-            <span class="value" id="metric-notes">0</span>
-            <span class="chip">Knowledge Base</span>
-          </div>
-          <div class="metric">
-            <span class="label">Upcoming Deadlines</span>
-            <span class="value" id="metric-deadlines">0</span>
-            <span class="chip" id="metric-deadlines-chip">--</span>
-          </div>
+        <div class="meta" style="gap:12px;">
+          <span id="clock"></span>
+          <span id="assistant-provider-pill">Provider · local</span>
+          <button class="button secondary" id="assistant-open-modal">Quick Chat</button>
         </div>
-        <div class="chart-canvas">
-          <canvas id="velocity-chart" width="400" height="160"></canvas>
-        </div>
-        <div class="item-card" style="grid-column: span 2;">
-          <div>
-            <h4>Log new task</h4>
-            <p class="subtle">Add a neon thread to the sprint backlog.</p>
-            <form id="task-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:12px;">
-              <input name="title" placeholder="Title" required />
-              <input name="due_date" type="date" />
-              <select name="priority">
-                <option value="medium">Priority: Medium</option>
-                <option value="high">Priority: High</option>
-                <option value="low">Priority: Low</option>
-              </select>
-              <input name="scope" placeholder="Scope" />
-              <input name="tags" placeholder="Tags" />
-              <textarea name="description" placeholder="Description" style="grid-column: 1 / -1;"></textarea>
-              <button class="primary" type="submit" style="grid-column: 1 / -1;">Commit to Sprint</button>
+      </header>
+
+      <main class="monky-content">
+        <section class="monky-tab active" id="tab-home">
+          <div class="stat-cards" id="home-stats"></div>
+          <div class="monky-panel" id="home-kpi-panel" style="margin:28px 0;">
+            <h2>KPI Highlights <small>Recent dataset metrics</small></h2>
+            <div id="home-kpi-visuals" class="kpi-visuals"></div>
+          </div>
+          <div class="monky-grid cols-3" id="home-panels">
+            <div class="monky-panel" id="home-projects">
+              <h2>Projects <small>Active focus streams</small></h2>
+              <ul class="list" id="home-projects-list"></ul>
+            </div>
+            <div class="monky-panel" id="home-tasks">
+              <h2>Tasks <small>Next commitments</small></h2>
+              <ul class="list" id="home-tasks-list"></ul>
+            </div>
+            <div class="monky-panel" id="home-notes">
+              <h2>Notes <small>Recent captures</small></h2>
+              <ul class="list" id="home-notes-list"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="monky-tab" id="tab-assistant">
+          <div class="monky-panel">
+            <div class="chat-shell">
+              <div class="chat-threads">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <strong>Threads</strong>
+                  <button class="button secondary" id="assistant-new-thread">New</button>
+                </div>
+                <div id="assistant-thread-list"></div>
+              </div>
+              <div class="chat-window">
+                <div class="chat-composer" style="border-bottom:1px solid rgba(76,90,132,0.25);">
+                  <select id="assistant-provider"></select>
+                  <div class="chat-actions">
+                    <button class="button secondary" id="assistant-refresh">Refresh</button>
+                  </div>
+                </div>
+                <div class="chat-messages" id="assistant-messages"></div>
+                <div class="chat-composer">
+                  <textarea id="assistant-input" placeholder="Ask MONKY about projects, KPIs, notes, or budgets..." rows="3"></textarea>
+                  <div class="chat-actions">
+                    <button class="button" id="assistant-send">Send</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="monky-tab" id="tab-projects">
+          <div class="monky-panel">
+            <div class="subtabs" id="projects-subtabs" style="display:flex;gap:12px;margin-bottom:18px;">
+              <button class="button secondary" data-target="projects" aria-pressed="true">Projects</button>
+              <button class="button secondary" data-target="tasks">Tasks</button>
+              <button class="button secondary" data-target="notes">Notes</button>
+            </div>
+            <div id="projects-section" class="section-block">
+              <form id="project-form" class="form-grid two-col" style="margin-bottom:20px;">
+                <label>Project name
+                  <input type="text" name="name" required />
+                </label>
+                <label>Owner
+                  <input type="text" name="owner" />
+                </label>
+                <label>Due date
+                  <input type="date" name="due_date" />
+                </label>
+                <label>Tags
+                  <input type="text" name="tags" placeholder="design, launch" />
+                </label>
+                <label>Status
+                  <select name="status">
+                    <option value="active">Active</option>
+                    <option value="planning">Planning</option>
+                    <option value="blocked">Blocked</option>
+                    <option value="done">Done</option>
+                  </select>
+                </label>
+                <label>Description
+                  <textarea name="description" placeholder="Project summary"></textarea>
+                </label>
+                <button class="button" type="submit">Add Project</button>
+              </form>
+              <ul class="list" id="projects-list"></ul>
+            </div>
+            <div id="tasks-section" class="section-block" hidden>
+              <form id="task-form" class="form-grid two-col" style="margin-bottom:20px;">
+                <label>Task title
+                  <input type="text" name="title" required />
+                </label>
+                <label>Project
+                  <select name="project_id" id="task-project-select"></select>
+                </label>
+                <label>Due date
+                  <input type="date" name="due_date" />
+                </label>
+                <label>Priority
+                  <input type="text" name="priority" placeholder="high" />
+                </label>
+                <label>Scope
+                  <input type="text" name="scope" placeholder="Sprint 12" />
+                </label>
+                <label>Tags
+                  <input type="text" name="tags" placeholder="ops, planning" />
+                </label>
+                <label>Description
+                  <textarea name="description" placeholder="Details"></textarea>
+                </label>
+                <button class="button" type="submit">Add Task</button>
+              </form>
+              <ul class="list" id="tasks-list"></ul>
+            </div>
+            <div id="notes-section" class="section-block" hidden>
+              <form id="note-form" class="form-grid two-col" style="margin-bottom:20px;">
+                <label>Note title
+                  <input type="text" name="title" required />
+                </label>
+                <label>Project
+                  <select name="project_id" id="note-project-select"></select>
+                </label>
+                <label>Content
+                  <textarea name="content" placeholder="Meeting notes..."></textarea>
+                </label>
+                <button class="button" type="submit">Add Note</button>
+              </form>
+              <ul class="list" id="notes-list"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="monky-tab" id="tab-kpi">
+          <div class="monky-panel">
+            <h2>KPI Studio <small>Upload spreadsheets for quick signal</small></h2>
+            <form id="kpi-upload" style="display:flex;gap:12px;align-items:center;margin-bottom:18px;">
+              <input type="file" name="file" accept=".csv,.xls,.xlsx" required />
+              <input type="text" name="name" placeholder="Dataset name" />
+              <button class="button" type="submit">Upload</button>
             </form>
+            <div class="monky-grid cols-3" id="kpi-datasets"></div>
           </div>
-        </div>
-        <div class="list" id="task-list" style="grid-column: span 2;"></div>
-        <div class="list" id="note-list" style="grid-column: span 2;"></div>
-      </section>
+        </section>
 
-      <section class="panel hidden" data-panel="chat">
-        <div>
-          <h3>MONKY Assistant</h3>
-          <p class="subtle">Local retrieval. Answers include neon citations.</p>
-        </div>
-        <div class="assistant-panel">
-          <div class="assistant-log" id="assistant-log"></div>
-          <form class="chat-input" id="assistant-form">
-            <input id="assistant-message" placeholder="Ask MONKY about bills, tasks, sensors…" autocomplete="off" />
-            <button class="primary" type="submit">Transmit</button>
-          </form>
-          <div class="sources" id="assistant-sources"></div>
-        </div>
-      </section>
-
-      <section class="panel hidden" data-panel="sensors">
-        <div>
-          <h3>Sensor Suite</h3>
-          <p class="subtle">Realtime gauge of circuits, pools, and ambient anomalies.</p>
-        </div>
-        <div id="sensor-alert-banner"></div>
-        <div class="sensor-grid" id="sensor-grid"></div>
-      </section>
-
-      <section class="panel hidden" data-panel="vault">
-        <div>
-          <h3>Vault</h3>
-          <p class="subtle">AES-GCM encrypted. PIN required before decrypt.</p>
-        </div>
-        <div id="vault-locked" class="vault-locked">
-          <input type="password" id="vault-pin" placeholder="Enter PIN" />
-          <button class="primary" id="vault-unlock">Unlock Vault</button>
-        </div>
-        <div id="vault-body" style="display:none; flex-direction:column; gap:18px;">
-          <form id="vault-form" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap:12px;">
-            <input name="name" placeholder="Name" required />
-            <input name="category" placeholder="Category" />
-            <textarea name="secret" placeholder="Secret" style="grid-column:1/-1;"></textarea>
-            <button class="primary" type="submit" style="grid-column:1/-1;">Store Secret</button>
-          </form>
-          <div class="vault-items" id="vault-items"></div>
-        </div>
-      </section>
-
-      <section class="panel hidden" data-panel="dev">
-        <div>
-          <h3>Dev Ops</h3>
-          <p class="subtle">Monitor server state, backups, and diagnostics.</p>
-        </div>
-        <div class="metric-grid">
-          <div class="metric">
-            <span class="label">Sensors</span>
-            <span class="value" id="dev-sensors">-</span>
-            <span class="chip">Active feeds</span>
+        <section class="monky-tab" id="tab-data">
+          <div class="monky-grid cols-3">
+            <div class="monky-panel">
+              <h2>RAG Library</h2>
+              <form id="rag-form" class="form-grid" style="margin-bottom:18px;">
+                <input type="text" name="title" placeholder="Document title" required />
+                <input type="text" name="source" placeholder="Source" />
+                <input type="text" name="tags" placeholder="Tags" />
+                <textarea name="content" placeholder="Document content" required></textarea>
+                <button class="button" type="submit">Add Document</button>
+              </form>
+              <ul class="list" id="rag-list"></ul>
+            </div>
+            <div class="monky-panel">
+              <h2>Data Inventory</h2>
+              <form id="asset-form" class="form-grid" style="margin-bottom:18px;">
+                <input type="text" name="title" placeholder="Asset title" required />
+                <input type="text" name="location" placeholder="Location or link" />
+                <input type="text" name="tags" placeholder="Tags" />
+                <input type="text" name="source" placeholder="Source" />
+                <textarea name="description" placeholder="Description"></textarea>
+                <button class="button" type="submit">Add Asset</button>
+              </form>
+              <ul class="list" id="asset-list"></ul>
+            </div>
+            <div class="monky-panel">
+              <h2>Quick Search</h2>
+              <form id="rag-search" style="display:flex;gap:10px;margin-bottom:12px;">
+                <input type="text" name="query" placeholder="Search RAG corpus" />
+                <button class="button secondary" type="submit">Find</button>
+              </form>
+              <ul class="list" id="rag-search-results"></ul>
+            </div>
           </div>
-          <div class="metric">
-            <span class="label">Open Tasks</span>
-            <span class="value" id="dev-tasks">-</span>
-            <span class="chip">Operational</span>
+        </section>
+
+        <section class="monky-tab" id="tab-vault">
+          <div class="monky-panel">
+            <h2>Vault <small>PIN-gated secrets locker</small></h2>
+            <form id="vault-unlock" style="display:flex;gap:12px;align-items:center;margin-bottom:18px;">
+              <input type="password" name="pin" placeholder="PIN" required />
+              <button class="button" type="submit">Unlock</button>
+            </form>
+            <div id="vault-secure" hidden>
+              <form id="vault-form" class="form-grid" style="margin-bottom:18px;">
+                <input type="text" name="name" placeholder="Entry name" required />
+                <input type="text" name="category" placeholder="Category" />
+                <textarea name="secret" placeholder="Secret payload" required></textarea>
+                <button class="button" type="submit">Add Secret</button>
+              </form>
+              <ul class="list" id="vault-list"></ul>
+            </div>
           </div>
-          <div class="metric">
-            <span class="label">Bills</span>
-            <span class="value" id="dev-bills">-</span>
-            <span class="chip">Ledger</span>
+        </section>
+
+        <section class="monky-tab" id="tab-dev">
+          <div class="monky-grid cols-3">
+            <div class="monky-panel">
+              <h2>Status</h2>
+              <div id="dev-status"></div>
+              <button class="button" id="dev-refresh" style="margin-top:12px;">Refresh</button>
+            </div>
+            <div class="monky-panel">
+              <h2>Config</h2>
+              <textarea id="dev-config" rows="12" placeholder="Config JSON"></textarea>
+              <div style="display:flex;gap:10px;margin-top:12px;">
+                <button class="button" id="dev-save-config">Save</button>
+                <button class="button secondary" id="dev-reload-config">Reload</button>
+              </div>
+            </div>
+            <div class="monky-panel">
+              <h2>Maintenance</h2>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <button class="button" id="dev-backup">Backup DB</button>
+                <form id="dev-restore" style="display:flex;gap:8px;">
+                  <input type="text" name="name" placeholder="Backup filename" required />
+                  <button class="button secondary" type="submit">Restore</button>
+                </form>
+              </div>
+            </div>
           </div>
-        </div>
-        <form id="backup-form" style="display:flex; gap:12px; align-items:center;">
-          <button class="primary" type="submit">Create Backup</button>
-          <span id="backup-status" class="subtle"></span>
-        </form>
-        <form id="restore-form" style="display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center;">
-          <input id="restore-name" placeholder="Backup filename" />
-          <button class="primary" type="submit">Restore</button>
-        </form>
-        <form id="ping-form" style="display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center;">
-          <input id="ping-url" placeholder="https://example.com/health" />
-          <button class="primary" type="submit">Ping</button>
-        </form>
-        <div class="subtle" id="ping-status"></div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   </div>
 
-  <div class="drawer" id="sensor-drawer">
-    <div class="card">
-      <button class="close-btn" id="drawer-close">×</button>
-      <h3 id="drawer-title"></h3>
-      <div class="subtle" id="drawer-subtitle"></div>
-      <canvas id="drawer-chart" width="480" height="160"></canvas>
-      <div class="metric-grid">
-        <div class="metric">
-          <span class="label">Current</span>
-          <span class="value" id="drawer-current">-</span>
+  <div class="chat-modal hidden" id="assistant-modal">
+    <div class="chat-modal-content">
+      <header>
+        <h3>MONKY Assistant</h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <select id="modal-chat-provider"></select>
+          <button class="button secondary" id="assistant-modal-close">Close</button>
         </div>
-        <div class="metric">
-          <span class="label">Status</span>
-          <span class="value" id="drawer-status">-</span>
-        </div>
-        <div class="metric">
-          <span class="label">Updated</span>
-          <span class="value" id="drawer-updated">-</span>
-        </div>
+      </header>
+      <div class="chat-messages" id="modal-chat-messages"></div>
+      <textarea id="modal-chat-input" rows="4" placeholder="Ask MONKY a question..."></textarea>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <input type="text" id="modal-chat-model" placeholder="Model override (optional)" />
+        <button class="button" id="modal-chat-send">Send</button>
       </div>
     </div>
   </div>
 
-  <script>
-    const panels = document.querySelectorAll('section.panel');
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.dataset.tab;
-        panels.forEach(panel => panel.classList.toggle('hidden', panel.dataset.panel !== target));
-      });
-    });
-
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock-time').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('clock-date').textContent = now.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    async function fetchJSON(url, options = {}) {
-      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
-      if (!res.ok) throw new Error(await res.text());
-      if (res.status === 204) return null;
-      return res.json();
-    }
-
-    async function loadEnv() {
-      try {
-        const env = await fetchJSON('/env');
-        document.getElementById('env-status').textContent = `Work:${env.features.work ? 'on' : 'off'} Home:${env.features.home ? 'on' : 'off'} Mobile:${env.features.mobile ? 'on' : 'off'}`;
-      } catch (err) {
-        document.getElementById('env-status').textContent = 'Env unavailable';
-      }
-    }
-    loadEnv();
-
-    async function loadTasks() {
-      const tasks = await fetchJSON('/tasks');
-      document.getElementById('metric-tasks').textContent = tasks.length;
-      const upcoming = tasks.filter(t => t.due_date);
-      document.getElementById('metric-deadlines').textContent = upcoming.length;
-      document.getElementById('metric-tasks-chip').textContent = `${tasks.filter(t => t.status !== 'done').length} active`;
-      document.getElementById('metric-deadlines-chip').textContent = upcoming.slice(0, 3).map(t => `${t.title} → ${t.due_date}`).join(' • ') || 'No deadlines';
-      const list = document.getElementById('task-list');
-      list.innerHTML = '';
-      tasks.forEach(task => {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `
-          <div>
-            <h4>${task.title}</h4>
-            <p>${task.description || ''}</p>
-            <p class="subtle">${task.status.toUpperCase()} • Due ${task.due_date || '—'} • Priority ${task.priority || '—'}</p>
-          </div>
-          <div>
-            <span class="chip">${task.scope || 'General'}</span>
-          </div>`;
-        list.appendChild(card);
-      });
-      renderVelocityChart(tasks);
-    }
-
-    function renderVelocityChart(tasks) {
-      const canvas = document.getElementById('velocity-chart');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#58f7ff';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      const points = tasks.slice(0, 6).map((t, i) => ({
-        x: (canvas.width / 5) * i,
-        y: canvas.height - Math.min(140, (i + 2) * 18 + (t.status === 'done' ? 10 : 0))
-      }));
-      if (!points.length) {
-        ctx.moveTo(0, canvas.height - 40);
-        ctx.lineTo(canvas.width, canvas.height - 80);
-      } else {
-        ctx.moveTo(0, canvas.height - 20);
-        points.forEach((p, idx) => {
-          const x = idx === points.length - 1 ? canvas.width - 20 : p.x + 40;
-          const y = p.y;
-          ctx.lineTo(x, y);
-        });
-      }
-      ctx.stroke();
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, 'rgba(88,247,255,0.35)');
-      gradient.addColorStop(1, 'rgba(88,247,255,0)');
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(0, canvas.height);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
-      ctx.fill();
-    }
-
-    async function loadNotes() {
-      const notes = await fetchJSON('/notes');
-      document.getElementById('metric-notes').textContent = notes.length;
-      const list = document.getElementById('note-list');
-      list.innerHTML = '';
-      notes.forEach(note => {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `<div><h4>${note.title || 'Untitled'}</h4><p>${note.content}</p><p class="subtle">${new Date(note.created_at).toLocaleString()}</p></div>`;
-        list.appendChild(card);
-      });
-    }
-
-    document.getElementById('task-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const payload = Object.fromEntries(formData.entries());
-      await fetchJSON('/tasks', { method: 'POST', body: JSON.stringify(payload) });
-      e.target.reset();
-      loadTasks();
-    });
-
-    async function loadAssistant() {
-      const log = document.getElementById('assistant-log');
-      log.innerHTML = '';
-      const messages = await fetchJSON('/assistant/messages');
-      messages.forEach(msg => appendAssistantMessage(msg.role, msg.content));
-    }
-
-    function appendAssistantMessage(role, text, sources = []) {
-      const entry = document.createElement('div');
-      entry.className = `assistant-entry ${role}`;
-      entry.innerHTML = `<div class="avatar"></div><div><div class="bubble">${text.replace(/\n/g, '<br/>')}</div></div>`;
-      if (role === 'assistant' && sources.length) {
-        const src = document.createElement('div');
-        src.className = 'sources';
-        src.innerHTML = `<strong>Sources</strong>` + sources.map(s => `<div>• [${s.type}] ${s.title} – ${s.detail}</div>`).join('');
-        entry.querySelector('.bubble').appendChild(src);
-      }
-      document.getElementById('assistant-log').appendChild(entry);
-      document.getElementById('assistant-log').scrollTo({ top: document.getElementById('assistant-log').scrollHeight, behavior: 'smooth' });
-    }
-
-    document.getElementById('assistant-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const input = document.getElementById('assistant-message');
-      if (!input.value.trim()) return;
-      const msg = input.value.trim();
-      appendAssistantMessage('user', msg);
-      input.value = '';
-      try {
-        const res = await fetchJSON('/assistant/send', { method: 'POST', body: JSON.stringify({ message: msg }) });
-        appendAssistantMessage('assistant', res.reply, res.sources);
-        const srcList = document.getElementById('assistant-sources');
-        srcList.innerHTML = res.sources.map(s => `<div class="chip">${s.type}: ${s.title}</div>`).join('');
-      } catch (err) {
-        appendAssistantMessage('assistant', 'Signal lost. Try again.');
-      }
-    });
-
-    async function loadSensors() {
-      const grid = document.getElementById('sensor-grid');
-      grid.innerHTML = '';
-      const sensors = await fetchJSON('/sensors');
-      const alerts = sensors.filter(s => s.status && s.status !== 'OK');
-      const alertBanner = document.getElementById('sensor-alert-banner');
-      if (alerts.length) {
-        alertBanner.innerHTML = `<div class="alert-banner">${alerts.map(a => `${a.name} → ${a.status}`).join(' • ')}</div>`;
-        document.getElementById('sensor-alert').textContent = `Alerts: ${alerts.length}`;
-      } else {
-        alertBanner.innerHTML = '';
-        document.getElementById('sensor-alert').textContent = 'Sensors nominal';
-      }
-      sensors.forEach(sensor => {
-        const card = document.createElement('div');
-        card.className = 'sensor-card';
-        const badgeClass = sensor.status === 'OK' ? 'ok' : sensor.status === 'Drift' ? 'drift' : 'oor';
-        card.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <strong>${sensor.name}</strong>
-            <span class="status-badge ${badgeClass.toLowerCase()}">${sensor.status}</span>
-          </div>
-          <div class="subtle">${sensor.location || sensor.kind || ''}</div>
-          <canvas class="sparkline" data-id="${sensor.id}"></canvas>
-          <div class="subtle">${Number(sensor.last_value || 0).toFixed(2)} ${sensor.unit || ''} • updated ${sensor.last_updated ? new Date(sensor.last_updated).toLocaleTimeString() : ''}</div>`;
-        card.addEventListener('click', () => openSensorDrawer(sensor.id, sensor));
-        grid.appendChild(card);
-        drawSparkline(card.querySelector('canvas'), sensor.id);
-      });
-    }
-
-    async function drawSparkline(canvas, sensorId) {
-      const readings = await fetchJSON(`/sensors/${sensorId}/readings`);
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width = canvas.clientWidth * window.devicePixelRatio;
-      const height = canvas.height = canvas.clientHeight * window.devicePixelRatio;
-      ctx.clearRect(0, 0, width, height);
-      if (!readings.length) return;
-      const values = readings.map(r => r.value).reverse();
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      ctx.beginPath();
-      values.forEach((val, idx) => {
-        const x = (idx / (values.length - 1 || 1)) * (width - 10) + 5;
-        const y = height - ((val - min) / ((max - min) || 1)) * (height - 10) - 5;
-        idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = '#58f7ff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-
-    async function openSensorDrawer(id, sensor) {
-      const drawer = document.getElementById('sensor-drawer');
-      drawer.classList.add('active');
-      document.getElementById('drawer-title').textContent = sensor.name;
-      document.getElementById('drawer-subtitle').textContent = `${sensor.location || ''} • ${sensor.description || ''}`;
-      document.getElementById('drawer-current').textContent = `${Number(sensor.last_value || 0).toFixed(2)} ${sensor.unit || ''}`;
-      document.getElementById('drawer-status').textContent = sensor.status;
-      document.getElementById('drawer-updated').textContent = sensor.last_updated ? new Date(sensor.last_updated).toLocaleString() : '';
-      const canvas = document.getElementById('drawer-chart');
-      const readings = await fetchJSON(`/sensors/${id}/readings`);
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width;
-      const height = canvas.height;
-      ctx.clearRect(0, 0, width, height);
-      if (!readings.length) return;
-      const values = readings.map(r => r.value).reverse();
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      ctx.beginPath();
-      values.forEach((val, idx) => {
-        const x = (idx / (values.length - 1 || 1)) * (width - 40) + 20;
-        const y = height - ((val - min) / ((max - min) || 1)) * (height - 40) - 20;
-        idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = '#58f7ff';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-      const gradient = ctx.createLinearGradient(0, 0, 0, height);
-      gradient.addColorStop(0, 'rgba(88,247,255,0.25)');
-      gradient.addColorStop(1, 'rgba(88,247,255,0)');
-      ctx.lineTo(width - 20, height - 20);
-      ctx.lineTo(20, height - 20);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
-      ctx.fill();
-    }
-
-    document.getElementById('drawer-close').addEventListener('click', () => {
-      document.getElementById('sensor-drawer').classList.remove('active');
-    });
-
-    async function unlockVault() {
-      const pin = document.getElementById('vault-pin').value.trim();
-      if (!pin) return;
-      const res = await fetchJSON('/vault/items/list', { method: 'POST', body: JSON.stringify({ pin }) });
-      document.getElementById('vault-locked').style.display = 'none';
-      const body = document.getElementById('vault-body');
-      body.style.display = 'flex';
-      body.dataset.pin = pin;
-      renderVaultItems(res);
-    }
-
-    function renderVaultItems(items) {
-      const list = document.getElementById('vault-items');
-      list.innerHTML = '';
-      items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        card.innerHTML = `<div><h4>${item.name}</h4><p>${item.secret}</p><p class="subtle">${item.category || ''}</p></div>`;
-        const del = document.createElement('button');
-        del.textContent = 'Delete';
-        del.className = 'primary';
-        del.style.background = 'rgba(255,107,129,0.1)';
-        del.style.borderColor = 'rgba(255,107,129,0.6)';
-        del.addEventListener('click', async () => {
-          const pin = document.getElementById('vault-body').dataset.pin;
-          await fetchJSON(`/vault/items/${item.id}`, { method: 'DELETE', body: JSON.stringify({ pin }) });
-          unlockVault();
-        });
-        card.appendChild(del);
-        list.appendChild(card);
-      });
-    }
-
-    document.getElementById('vault-unlock').addEventListener('click', unlockVault);
-    document.getElementById('vault-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const pin = document.getElementById('vault-body').dataset.pin;
-      const formData = new FormData(e.target);
-      const payload = Object.fromEntries(formData.entries());
-      payload.pin = pin;
-      await fetchJSON('/vault/items', { method: 'POST', body: JSON.stringify(payload) });
-      e.target.reset();
-      unlockVault();
-    });
-
-    async function loadDev() {
-      const status = await fetchJSON('/dev/status');
-      document.getElementById('dev-sensors').textContent = status.sensor_count;
-      document.getElementById('dev-tasks').textContent = status.open_tasks;
-      document.getElementById('dev-bills').textContent = status.bill_count;
-      document.getElementById('backup-status').textContent = status.latest_backup ? `Latest: ${status.latest_backup}` : 'No backup yet';
-    }
-
-    document.getElementById('backup-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const res = await fetchJSON('/dev/backup', { method: 'POST' });
-      document.getElementById('backup-status').textContent = `Created ${res.backup}`;
-    });
-
-    document.getElementById('restore-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('restore-name').value.trim();
-      if (!name) return;
-      try {
-        await fetchJSON('/dev/restore', { method: 'POST', body: JSON.stringify({ backup: name }) });
-        document.getElementById('backup-status').textContent = `Restored ${name}`;
-      } catch (err) {
-        document.getElementById('backup-status').textContent = 'Restore failed';
-      }
-    });
-
-    document.getElementById('ping-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const url = document.getElementById('ping-url').value.trim();
-      if (!url) return;
-      const res = await fetchJSON('/dev/ping', { method: 'POST', body: JSON.stringify({ url }) });
-      document.getElementById('ping-status').textContent = res.status ? `Ping ${res.status}` : res.error;
-    });
-
-    async function boot() {
-      try {
-        await Promise.all([loadTasks(), loadNotes(), loadAssistant(), loadSensors(), loadDev()]);
-      } catch (err) {
-        console.warn('Boot error', err);
-      }
-    }
-    boot();
-    setInterval(loadSensors, 45000);
-  </script>
+  <script type="module" src="/static/js/monky-work.js"></script>
 </body>
 </html>
