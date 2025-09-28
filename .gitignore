@@ -6,3 +6,4 @@ monky.db-*
 storage/
 monky/
 dist/
+.env
