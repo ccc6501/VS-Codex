@@ -549,7 +549,7 @@ def call_provider(provider: str, message: str, model: Optional[str] = None) -> D
     except ProviderError:
         raise
     except requests.RequestException as exc:
-        detail = getattr(exc.response, "text", str(exc))
+        detail = getattr(exc.response, "text", str(exc)) if hasattr(exc, "response") and exc.response is not None else str(exc)
         raise ProviderError(provider, f"HTTP error: {detail}") from exc
     except Exception as exc:  # pragma: no cover - unexpected
         raise ProviderError(provider, str(exc)) from exc
