@@ -659,6 +659,10 @@ textarea {
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   }
 
+  /* Keep multi-column layout for chat-shell above 900px */
+}
+
+@media (max-width: 900px) {
   .chat-shell {
     grid-template-columns: minmax(0, 1fr);
   }
