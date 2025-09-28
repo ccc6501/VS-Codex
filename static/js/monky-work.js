@@ -1009,7 +1009,7 @@ async function saveConfig() {
 function setupAssistantModal() {
   const modal = document.getElementById('assistant-modal');
   if (!modal) {
-    console.warn("setupAssistantModal: 'assistant-modal' element not found in DOM.");
+    console.warn("Assistant modal element not found in DOM.");
     return;
   }
   const openBtn = document.getElementById('assistant-open-modal');
