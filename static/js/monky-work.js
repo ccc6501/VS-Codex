@@ -286,9 +286,9 @@ function populateProviderSelects() {
     select.innerHTML = '';
     state.assistant.providers.forEach(provider => {
       const option = createElement('option', { value: provider.id }, `${provider.label}${provider.has_key ? '' : ' · simulated'}`);
-      option.dataset.model = provider.model || '';
       if (provider.id === state.assistant.provider) {
         option.selected = true;
+        option.dataset.model = provider.model || '';
       }
       select.appendChild(option);
     });
