@@ -116,7 +116,8 @@ export async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
     return true;
-  } catch {
+  } catch (err) {
+    showToast('Failed to copy to clipboard: ' + (err && err.message ? err.message : 'Unknown error'), 'danger');
     return false;
   }
 }
