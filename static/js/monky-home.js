@@ -379,7 +379,7 @@ async function sendAssistantMessage(source) {
     await api.assistant.send({
       thread_id: state.assistant.threadId,
       provider: providerSelect.value,
-      model: modelInput ? modelInput.value.trim() || modelInput.placeholder.replace(/^Model\s/, '') : undefined,
+      model: modelInput ? modelInput.value.trim() || modelInput.dataset.model : undefined,
       message,
     });
     textarea.value = '';
