@@ -248,3 +248,28 @@ Press CTRL+C to quit
 127.0.0.1 - - [27/Sep/2025 22:16:36] "GET /dev/status HTTP/1.1" 200 -
 127.0.0.1 - - [27/Sep/2025 22:16:36] "GET /settings/config HTTP/1.1" 200 -
 127.0.0.1 - - [27/Sep/2025 22:16:54] "POST /settings/config HTTP/1.1" 200 -
+ * Serving Flask app 'server'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5051
+Press CTRL+C to quit
+/workspaces/VS-Codex/server.py:993: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return jsonify({"ok": True, "time": datetime.utcnow().isoformat()})
+127.0.0.1 - - [28/Sep/2025 00:56:28] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 00:56:29] "GET /launch HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 00:56:30] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 00:56:30] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [28/Sep/2025 00:56:31] "GET /server HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 00:56:31] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 00:56:32] "GET /static/js/monky-server.js HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 00:56:32] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 00:56:32] "GET /settings/config HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 00:56:32] "GET /dev/status HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 00:56:32] "GET /env HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 00:56:32] "GET /assistant/providers HTTP/1.1" 200 -
+/workspaces/VS-Codex/server.py:926: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (sensor["id"], new_value, datetime.utcnow().isoformat()),
+/workspaces/VS-Codex/server.py:930: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  (new_value, datetime.utcnow().isoformat(), status, sensor["id"]),
+/workspaces/VS-Codex/server.py:932: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=3)
