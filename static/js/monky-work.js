@@ -1,8 +1,10 @@
 import { api, showToast, formatDate, relativeTime, createElement, renderSources, bindCopyButtons } from './monky-common.js';
 
+const TAB_NAMES = ['home', 'assistant', 'projects', 'kpi', 'data', 'vault', 'dev'];
+
 const state = {
   env: {},
-  tabsLoaded: { home: false, assistant: false, projects: false, kpi: false, data: false, vault: false, dev: false },
+  tabsLoaded: Object.fromEntries(TAB_NAMES.map(tab => [tab, false])),
   assistant: {
     providers: [],
     provider: 'local',
