@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Launch MONKY",
+      "program": "${workspaceFolder}/${input:programPath}",
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "programPath",
+      "description": "Select the Python file to debug",
+      "options": [
+        "launch_monky.py",
+        "server.py",
+        "setup_wizard.py"
+      ]
+    }
+  ]
+}
