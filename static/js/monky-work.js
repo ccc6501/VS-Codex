@@ -1051,5 +1051,5 @@ function setupAssistantModal() {
 }
 
 window.addEventListener('beforeunload', () => {
-  if (clockInterval) clearInterval(clockInterval);
+  cleanupClock();
 });
