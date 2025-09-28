@@ -164,12 +164,10 @@ def set_nested(data: Dict[str, Any], path: Iterable[str], value: Any) -> None:
     current[path[-1]] = value
 
 
+from utils import get_python_executable
+
 def launch_monky_process() -> None:
-    python = sys.executable
-    if os.name == "nt":
-        pythonw = Path(python).with_name("pythonw.exe")
-        if pythonw.exists():
-            python = str(pythonw)
+    python = get_python_executable()
     subprocess.Popen([python, str(BASE_DIR / "launch_monky.py")])
 
 

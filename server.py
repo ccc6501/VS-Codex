@@ -1309,7 +1309,7 @@ def generate_local_summary(message: str):
                     due_dt = None
         else:
             due_dt = None
-        if due_dt and due_dt - datetime.utcnow() <= timedelta(days=7) and bill["status"] != "paid":
+        if due_dt and due_dt - datetime.now(datetime.UTC) <= timedelta(days=7) and bill["status"] != "paid":
             due_soon.append(bill)
         haystack = (bill["name"] or "").lower()
         if keywords and any(k in haystack for k in keywords):

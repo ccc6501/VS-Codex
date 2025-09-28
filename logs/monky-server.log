@@ -273,3 +273,18 @@ Press CTRL+C to quit
   (new_value, datetime.utcnow().isoformat(), status, sensor["id"]),
 /workspaces/VS-Codex/server.py:932: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
   cutoff = datetime.utcnow() - timedelta(days=3)
+127.0.0.1 - - [28/Sep/2025 01:00:25] "GET /work HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 01:00:26] "GET /static/css/monky.css HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 01:00:26] "GET /static/js/monky-work.js HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 01:00:26] "GET /static/js/monky-common.js HTTP/1.1" 304 -
+127.0.0.1 - - [28/Sep/2025 01:00:26] "GET /env HTTP/1.1" 200 -
+/workspaces/VS-Codex/server.py:1927: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp": datetime.utcnow().isoformat(),
+127.0.0.1 - - [28/Sep/2025 01:00:26] "GET /dashboard/work HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:27] "GET /kpi/datasets HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:28] "GET /rag/docs HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:28] "GET /data/assets HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:37] "GET /assistant/providers HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:37] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:38] "GET /assistant/threads HTTP/1.1" 200 -
+127.0.0.1 - - [28/Sep/2025 01:00:38] "GET /assistant/messages?thread_id=1 HTTP/1.1" 200 -

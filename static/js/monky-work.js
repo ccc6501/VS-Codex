@@ -269,6 +269,7 @@ function syncModalProvider() {
   modalSelect.value = state.assistant.provider;
   const selected = modalSelect.selectedOptions[0];
   if (selected) {
+    modelInput.dataset.model = selected.dataset.model || '';
     modelInput.placeholder = selected.dataset.model
       ? `Model ${selected.dataset.model}`
       : 'Model override (optional)';
@@ -340,7 +341,7 @@ async function loadMessages(threadId) {
     state.assistant.threadId = payload.thread.id;
     state.assistant.messages = payload.messages || [];
     renderMessages();
-  renderModalMessages();
+    renderModalMessages();
   } catch (err) {
     showToast(`Load messages failed: ${err.message}`, 'danger');
   }
@@ -438,7 +439,9 @@ async function sendAssistantMessage(source) {
     await api.assistant.send({
       thread_id: state.assistant.threadId,
       provider: providerSelect.value,
-      model: modelInput ? modelInput.value.trim() || modelInput.placeholder.replace(/^Model\s/, '') : undefined,
+      model: modelInput
+        ? modelInput.value.trim() || modelInput.dataset.model || undefined
+        : undefined,
       message,
     });
     textarea.value = '';

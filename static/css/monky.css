@@ -1,8 +1,8 @@
 :root {
   color-scheme: dark;
   --bg: radial-gradient(circle at 15% 15%, rgba(103, 237, 255, 0.12), transparent 42%),
-         radial-gradient(circle at 85% 10%, rgba(144, 118, 255, 0.18), transparent 50%),
-         #04060d;
+    radial-gradient(circle at 85% 10%, rgba(144, 118, 255, 0.18), transparent 50%),
+    #04060d;
   --panel: rgba(13, 16, 27, 0.86);
   --panel-solid: #0f1322;
   --surface: rgba(16, 19, 31, 0.75);
@@ -571,7 +571,6 @@ textarea {
   gap: 10px;
 }
 
-.floating-chat {
 .chat-modal {
   position: fixed;
   inset: 0;
@@ -640,20 +639,30 @@ textarea {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 1080px) {
   :root {
     --sidebar-width: 220px;
   }
+
   .monky-app {
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   }
+
   .chat-shell {
     grid-template-columns: minmax(0, 1fr);
   }
+
   .chat-threads {
     flex-direction: row;
     overflow-x: auto;
@@ -664,12 +673,14 @@ textarea {
   .monky-app {
     grid-template-columns: 1fr;
   }
+
   .monky-sidebar {
     position: relative;
     height: auto;
     flex-direction: row;
     flex-wrap: wrap;
   }
+
   .monky-sidebar footer {
     width: 100%;
   }

@@ -108,25 +108,17 @@ export function createElement(tag, attrs = {}, ...children) {
   return el;
 }
 
-export function copyToClipboard(text) {
+export async function copyToClipboard(text) {
   if (!navigator.clipboard) {
-    const txt = document.createElement('textarea');
-    txt.value = text;
-    txt.setAttribute('readonly', '');
-    txt.style.position = 'absolute';
-    txt.style.opacity = '0';
-    document.body.appendChild(txt);
-    txt.select();
-    try {
-      document.execCommand('copy');
-      document.body.removeChild(txt);
-      return true;
-    } catch (err) {
-      document.body.removeChild(txt);
-      return false;
-    }
+    showToast('Clipboard API not available in this browser.', 'danger');
+    return false;
   }
-  return navigator.clipboard.writeText(text).then(() => true).catch(() => false);
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function renderSources(container, sources = []) {
